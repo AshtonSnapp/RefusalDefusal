@@ -1,9 +1,9 @@
 #####################################################################
 # Name: Carrick Inabnett, Ashton Snapp, Justin Crouch
-# Last Update: 8 April 2019
-# Changes: Added widgets for the home screen of the game,
-#		   Started adding widgets for each difficulty
-#		   Starting adding widgets for about and help screens
+# Last Update: 17 April 2019
+# Changes: Added fullsize mode for Raspberry Pi
+#          Tested GUI on Raspberry Pi
+#               Results: SUCCESS
 #####################################################################
 from Tkinter import *
 
@@ -161,6 +161,7 @@ WIDTH = 800
 HEIGHT = 480
 
 window = Tk()
+window.overrideredirect(1)
 window.geometry("{}x{}".format(WIDTH, HEIGHT))
 
 g = Game(window)
