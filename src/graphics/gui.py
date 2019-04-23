@@ -1,9 +1,7 @@
 #####################################################################
 # Name: Carrick Inabnett, Ashton Snapp, Justin Crouch
-# Last Update: 17 April 2019
-# Changes: Added fullsize mode for Raspberry Pi
-#          Tested GUI on Raspberry Pi
-#               Results: SUCCESS
+# Last Update: 22 April 2019
+# Changes: Fixed the comments for setting up the different GUIs.
 #####################################################################
 from Tkinter import *
 
@@ -74,7 +72,7 @@ class Game(Frame):
 		back = Button(Game.display, activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-	# Setup GUI for easy mode
+	# Setup GUI for medium mode
 	def setupMediumMode(self):
 		Game.display = Frame(self)
 		self.master.title("Medium Mode")
@@ -88,7 +86,7 @@ class Game(Frame):
 		back = Button(Game.display, activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-	# Setup GUI for easy mode
+	# Setup GUI for hard mode
 	def setupHardMode(self):
 		Game.display = Frame(self)
 		self.master.title("Hard Mode")
@@ -102,7 +100,7 @@ class Game(Frame):
 		back = Button(Game.display, activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-	# Setup GUI for easy mode
+	# Setup GUI for IRL mode
 	def setupRLMode(self):
 		Game.display = Frame(self)
 		self.master.title("Real Life Mode")
@@ -116,7 +114,7 @@ class Game(Frame):
 		back = Button(Game.display, activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-	# Setup GUI for easy mode
+	# Setup GUI for the About Page
 	def setupAbout(self):
 		Game.display = Frame(self)
 		self.master.title("About")
@@ -130,7 +128,7 @@ class Game(Frame):
 		back = Button(Game.display, activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-	# Setup GUI for easy mode
+	# Setup GUI for the Help Page
 	def setupHelp(self):
 		Game.display = Frame(self)
 		self.master.title("Help")

@@ -18,7 +18,7 @@
 
   - Helper Class:
   	- Used for characters which help the player out
-	- Cajun, Dad, Stoner, Drill Seargant
+	  - Cajun, Dad, Stoner, Drill Seargant
 
  - Binary Coded Decimal for a code to lower the Robot's Meter when it gets red (last resort)
 
