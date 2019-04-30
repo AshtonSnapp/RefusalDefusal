@@ -76,10 +76,11 @@ class Game(Frame):
 		back.place(width=100, height=40, x=0, y=0)
 
 		# Create timer
-		timer = Timer(Game.display, 60)
-		timer.start()
+		self.timer = Timer(Game.display)
+		self.timer.set(60)
+		self.timer.start()
 
-		self.events.append(lambda:timer.update())
+		self.events.append(self.handleTimer)
 
 	# Setup GUI for medium mode
 	def setupMediumMode(self):
@@ -169,6 +170,12 @@ class Game(Frame):
 
 		Game.display.pack(fill=BOTH, expand=1)
 
+	def handleTimer(self):
+		self.timer.update()
+
+		if(self.timer.end):
+			self.events.remove(self.handleTimer)
+
 	def handleEvents(self):
 		for event in self.events:
 			event()
@@ -177,29 +184,65 @@ class Game(Frame):
 class Timer(Text):
 
 	# Duration for the timer to count from, in seconds
-	def __init__(self, master, duration):
-		Text.__init__(self, master, height=1, width=6, bg="#CCC", highlightthickness=0, font=("Times", 20, "bold"))
+	def __init__(self, master):
+		Text.__init__(self, master, height=1, width=8, bg="#CCC", highlightthickness=0, font=("Times", 20, "bold"))
 
 		self.place(x=WIDTH/2, y=HEIGHT/2)
 		self.state = DISABLED
 
+		self.duration = 0
+		self.remainder = 0
+		self.start_time = 0
+		self.end = False
+
+	def set(self, duration):
 		self.duration = duration
 		self.remainder = 0
 		self.start_time = 0
+		self.end = False
 
-	def start(self):
-		self.start_time = time()
+		self.state = NORMAL
+		self.insert("1.0", "00:00")
+		self.state = DISABLED
 
 	def update(self):
 		self.calulateTime()
 
+		formatted = self.formatTime()
+
 		self.state = NORMAL
 		self.delete("1.0", END)
-		self.insert("1.0", self.remainder)
+		self.insert("1.0", formatted)
 		self.state = DISABLED
+
+	def formatTime(self):
+		pre_form = str(round(self.remainder / 60.0, 2)).split(".")
+
+		if(len(pre_form[0]) == 2):
+			formatted = pre_form[0]
+		else:
+			formatted = "0{}".format(pre_form[0])
+
+		formatted += ":"
+
+		pre_form[1] = str(int(pre_form[1])*60/100)
+	
+		if(len(pre_form[1]) == 2):
+			formatted += pre_form[1]
+		else:
+			formatted += "0{}".format(pre_form[1])
+		
+		return formatted
 
 	def calulateTime(self):
 		self.remainder = self.duration - (time() - self.start_time)
+
+		if(self.remainder < 0):
+			self.end = True
+			self.remainder = 0
+
+	def start(self):
+		self.start_time = time()
 
 #----[MAIN]----------------------------------------------------------
 # Setup window, originally 800x480
