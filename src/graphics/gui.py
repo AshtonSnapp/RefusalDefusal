@@ -194,7 +194,8 @@ class Timer(Text):
 		self.calulateTime()
 
 		self.state = NORMAL
-		self.insert(INSERT, self.remainder)
+		self.delete("1.0", END)
+		self.insert("1.0", self.remainder)
 		self.state = DISABLED
 
 	def calulateTime(self):
