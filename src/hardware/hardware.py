@@ -50,3 +50,6 @@ class HardIO(object):
 
 		if (DEBUG):
 			print "[H.I/O] Cleaned up all the GPIO pins. We're done here boys!"
+
+# List of lists of sequences, which are lists of things to do. First index is difficulty, second index is choice, third index is step.
+sequences = [[[], [], [], []], [[], [], [], []], [[], [], [], []], [[], [], [], []]]
