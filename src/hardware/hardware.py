@@ -40,6 +40,8 @@ class HardIO(object):
 		GPIO.setup(HardIO.Input_pins, GPIO.IN, GPIO.PUD_DOWN)
 		GPIO.setup(HardIO.Output_pins, GPIO.OUT)
 
+		GPIO.output(HardIO.Output_pins, 0)
+
 	# Controls the 7-seg display
 	# Value is a string containing two digits: 3, 6, F
 	def controlSevenSeg(self, value):
@@ -61,7 +63,7 @@ class HardIO(object):
 
 		sleep(.01)
 
-		GPIO.output( pinMapping[value[0]], 0 )
+		GPIO.output( pinMapping[value[1]], 0 )
 
 	'''
 	def readPin(self, pin):
@@ -90,5 +92,5 @@ sequences = [[[], [], [], []], [[], [], [], []], [[], [], [], []], [[], [], [], 
 if(__name__ == "__main__"):
 	hIO = HardIO()
 
-	for i in range(10000):
-		hIO.controlSevenSeg("36")
+	for i in range(2000000):
+		hIO.controlSevenSeg("66")
