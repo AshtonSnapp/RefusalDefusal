@@ -14,8 +14,8 @@ DEBUG = True
 
 class HardIO(object):
 	
-	Input_pins = [5, 4, 22, 23, 24, 25, 26, 27, 12, 6]
-	Output_pins = [18, 19, 20, 21, 17, 16, 13]
+	Input_pins = sorted([5, 4, 22, 23, 24, 25, 26, 27, 12, 6])
+	Output_pins = ([18, 19, 20, 21, 17, 16, 13])
 
 	def __init__(self):
 		GPIO.setmode(GPIO.BCM)
@@ -87,7 +87,7 @@ class HardIO(object):
 			print "[H.I/O] Cleaned up all the GPIO pins. We're done here boys!"
 
 # List of lists of sequences, which are lists of things to do. First index is difficulty, second index is choice, third index is step.
-sequences = [[[], [], [], []], [[], [], [], []], [[], [], [], []], [[], [], [], []]]
+sequences = [[['flip(1)', 'pull([2, 3])', 'enter([4, 1, 3])', 'flip(1)'], ['pull(1)', 'enter([2, 4])', 'flip([3, 1])', 'pull(1)'], ['flip(2)', 'pull([1, 3])', 'enter(2)', 'pull([2,3])', 'flip(2)'], ['', '', '', '', '']], [[], [], [], []], [[], [], [], []], [[], [], [], []]]
 
 if(__name__ == "__main__"):
 	hIO = HardIO()
