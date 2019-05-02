@@ -3,9 +3,7 @@
 # Last Update: 23 April 2019
 # Changes: Hardware Tings
 #####################################################################
-
-
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 from time import sleep
 
 
@@ -14,38 +12,27 @@ DEBUG = True
 
 class HardIO(object):
 	
-	Input_pins = sorted([5, 4, 22, 23, 24, 25, 26, 27, 12, 6])
-	Output_pins = ([18, 19, 20, 21, 17, 16, 13])
+	Input_pins = [5, 4, 22, 23, 24, 25, 26, 27, 12, 6]
+	Output_pins = [18, 19, 20, 21, 17, 16, 13]
 
 	def __init__(self):
+		'''
 		GPIO.setmode(GPIO.BCM)
 
 		if (DEBUG):
 			print "[H.I/O] Set pin numbering scheme to Broadcom. Hardware Initialization has begun."
 
-		'''
-		for i in generalPins:
-			if i % 2 == 0:
-				GPIO.setup(i, GPIO.IN)
-				
-				if (DEBUG):
-					print "[H.I/O] Set pin " + str(i) + " to input."
-			else:
-				GPIO.setup(i, GPIO.OUT, initial=GPIO.LOW)
-				
-				if (DEBUG):
-					print "[H.I/O] Set pin " + str(i) + " to output."
-		'''
-
 		GPIO.setup(HardIO.Input_pins, GPIO.IN, GPIO.PUD_DOWN)
 		GPIO.setup(HardIO.Output_pins, GPIO.OUT)
 
-		GPIO.output(HardIO.Output_pins, 0)
+		self.numpad_pause = False
+		'''
 
 	# Controls the 7-seg display
 	# Value is a string containing two digits: 3, 6, F
 	def controlSevenSeg(self, value):
-		# Map string value to pin numbers
+		'''
+		# Map string values to pin numbers
 		pinMapping = {"3":18, "6":19, "F":20}
 
 		# Turn left side of 7-seg on
@@ -64,27 +51,44 @@ class HardIO(object):
 		sleep(.01)
 
 		GPIO.output( pinMapping[value[1]], 0 )
+		'''
 
-	'''
-	def readPin(self, pin):
-		if (pin % 2 == 0) and (pin in generalPins):
-			return GPIO.input(pin)
-		else:
-			if (DEBUG):
-				print "[H.I/O] Tried to read pin " + str(pin) + " but it isn't a valid input!"
+	# Controls and handles numpad
+	# code is an array of numbers: 0, 1, 2, 3
+	def controlNumpad(self, code):
+		'''
+		# Map string values to pin numbers
+		pinMapping = [23, 24, 25, 26]
 
-	def setPin(self, pin, value):
-		if (pin % 2 != 0) and (pin in generalPins):
-			GPIO.output(pin, value)
+		pressed = []
+
+		if(len(code) > 0):
+			for pin in pinMapping: pressed.append(GPIO.input(pin))
+
+			if(self.numpad_pause):
+				self.numpad_pause = pressed.count(1) > 0
+
+			else:
+				if(pressed.count(1) == 1):
+					active_index = pressed.index(1)
+
+					if(code[0] == active_index):
+						del code[0]
+
+				if(pressed.count(1) > 0):
+					self.numpad_pause = True
+
 		else:
-			print "[H.I/O] Tried to set pin " + str(pin) + " but it isn't a valid output!"
-	'''
+			return True
+		'''
 
 	def destroy(self):
+		'''
 		GPIO.cleanup()
 
 		if (DEBUG):
 			print "[H.I/O] Cleaned up all the GPIO pins. We're done here boys!"
+		'''
 
 # List of lists of sequences, which are lists of things to do. First index is difficulty, second index is choice, third index is step.
 sequences = [[['flip(1)', 'pull([2, 3])', 'enter([4, 1, 3])', 'flip(1)'], ['pull(1)', 'enter([2, 4])', 'flip([3, 1])', 'pull(1)'], ['flip(2)', 'pull([1, 3])', 'enter(2)', 'pull([2,3])', 'flip(2)'], ['', '', '', '', '']], [[], [], [], []], [[], [], [], []], [[], [], [], []]]
@@ -92,5 +96,6 @@ sequences = [[['flip(1)', 'pull([2, 3])', 'enter([4, 1, 3])', 'flip(1)'], ['pull
 if(__name__ == "__main__"):
 	hIO = HardIO()
 
-	for i in range(2000000):
-		hIO.controlSevenSeg("66")
+	for i in range(10000):
+		hIO.controlSevenSeg("36")
+

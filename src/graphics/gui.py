@@ -1,7 +1,7 @@
 #####################################################################
 # Name: Carrick Inabnett, Ashton Snapp, Justin Crouch
-# Last Update: 22 April 2019
-# Changes: Fixed the comments for setting up the different GUIs.
+# Last Update: 1 May 2019
+# Changes: Added timer to difficulties.
 #####################################################################
 from Tkinter import *
 from time import time, sleep
@@ -22,6 +22,7 @@ class Game(Frame):
 		Game.display = Frame(self, bg="white")
 
 		self.events = []
+		self.running = True
 
 	# Setup GUI for main screen
 	def setupHomeScreen(self):
@@ -195,11 +196,9 @@ class Game(Frame):
 
 	# Clean the display, update the display, display the display
 	def loadScreen(self, setupFunc):
-		global alive
-
 		# Stop the mainloop if exiting
 		if(setupFunc == "EXIT"):
-			alive = False
+			self.running = False
 			return
 
 		# Clear the screen and any events stored
@@ -218,7 +217,7 @@ class Game(Frame):
 			self.loadScreen(self.setupGameOver)
 
 	# Run events stored in self.events
-	def runEvents(self):
+	def update(self):
 		for event in self.events:
 			event()
 
@@ -306,28 +305,32 @@ class Timer(Text):
 		self.start_time = time()
 
 #----[SETUP]---------------------------------------------------------
-# Setup window, originally 800x480
-WIDTH = 800
-HEIGHT = 480
+def setup():
+	global WIDTH, HEIGHT
+	# Setup window, originally 800x480
+	WIDTH = 800
+	HEIGHT = 480
 
-window = Tk()
-window.overrideredirect(1)
-window.geometry("{}x{}".format(WIDTH, HEIGHT))
+	window = Tk()
+	window.overrideredirect(1)
+	window.geometry("{}x{}".format(WIDTH, HEIGHT))
 
-# Setup the game
-g = Game(window)
-alive = True
+	return Game(window), window
 
 #----[MAIN]----------------------------------------------------------
-# Start the game
-g.play()
+if(__name__ == "__main__"):
+	# Setup the game
+	g, window = setup()
 
-# Main loop...
-while(alive):
-	g.runEvents()
-	window.update_idletasks()
-	window.update()
-	sleep(0.01)
+	# Start the game
+	g.play()
+
+	# Main loop...
+	while(g.running):
+		g.update()
+		window.update_idletasks()
+		window.update()
+		sleep(0.01)
 
 # DIFFICULTIES:
 # - Control-Alt-Deletus (Easy) - 
