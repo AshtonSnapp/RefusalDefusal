@@ -23,7 +23,10 @@ class HardIO(object):
 			print "[H.I/O] Set pin numbering scheme to Broadcom. Hardware Initialization has begun."
 
 		GPIO.setup(HardIO.Input_pins, GPIO.IN, GPIO.PUD_DOWN)
-		GPIO.setup(HardIO.Output_pins, GPIO.OUT)
+		GPIO.setup(HardIO.Output_pins, GPIO.OUT, initial=GPIO.LOW)
+
+		if (DEBUG):
+			print "[H.I/O] Setup input and output pins."
 
 		self.numpad_pause = False
 		'''
@@ -37,16 +40,16 @@ class HardIO(object):
 
 		# Turn left side of 7-seg on
 		# Turn on path for specified value
-		GPIO.output( pinMapping[value[0]], 1 )
-		GPIO.output( 21, 0 )
+		GPIO.output(pinMapping[value[0]], 1 )
+		GPIO.output(21, 0 )
 
 		sleep(.01)
 
 		# Turn right side of 7-seg on
 		# Turn on path for specified value
-		GPIO.output( pinMapping[value[0]], 0 )
-		GPIO.output( pinMapping[value[1]], 1 )
-		GPIO.output( 21, 1 )
+		GPIO.output(pinMapping[value[0]], 0 )
+		GPIO.output(pinMapping[value[1]], 1 )
+		GPIO.output(21, 1 )
 
 		sleep(.01)
 
@@ -98,4 +101,3 @@ if(__name__ == "__main__"):
 
 	for i in range(10000):
 		hIO.controlSevenSeg("36")
-
