@@ -5,9 +5,9 @@
 #####################################################################
 import RPi.GPIO as GPIO
 from time import sleep
+import os
 
-
-DEBUG = True
+DEBUG = bool(os.getenv('DEBUG', False))
 
 
 class HardIO(object):
