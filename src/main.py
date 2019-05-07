@@ -2,8 +2,9 @@
 # Name: Carrick Inabnett, Ashton Snapp, Justin Crouch
 # Last Update: 7 May 2019
 # Changes: Added sequences for easy difficulty
-#		   Added way to load a sequence given a difficulty
-#		   Added way to run loaded sequence
+#	   Added way to load a sequence given a difficulty
+#	   Added way to run loaded sequence
+#          Added way to determine if player won or lost
 #####################################################################
 
 # Import necessary modules
@@ -23,8 +24,6 @@ def closeGame(hard_io):
 
 	print closingRemarks[randint(0, len(closingRemarks) - 1)]
 
-	exit(0)
-
 #----[SETUP]---------------------------------------------------------
 io = hw.HardIO()
 
@@ -33,51 +32,69 @@ gui, window = GUI.setup()
 
 # List of easy mode sequences
 # Each sequence has an activity and a hint for that activity
-easy_sequences = [{"f100":"Flip switch 1", "p100":"Pull green and blue", "e413":"Enter 413", "f000":"Flip switch 1"}, 
-				  {"f010":"Flip switch 2", "p010":"Pull red and and blue", "e2":"Enter 2", "p000":"Pull green", "f000":"Flip switch 2"}, 
-				  {"p011":"Pull red", "e24":"Enter 24", "f101":"Flip Switch 1 and 3", "p001":"Pull green"}, 
-				  {"p110":"Pull blue", "e41":"Enter 41", "p000":"Pull red and green", "e231":"Enter 231"}]
+easy_sequences = [["f100", "p100", "e413", "f000"], 
+		  ["f010", "p010", "e2", "p000", "f000"], 
+		  ["p011", "e24", "f101", "p001"], 
+		  ["p110", "e41", "p000", "e231"]]
 
-sequence_loaded = None
-sequence = None
+easy_hints = [["Flip switch 1", "Pull green and blue", "Enter 413", "Flip switch 1"],
+              ["Flip switch 2", "Pull red and and blue", "Enter 2", "Pull green", "Flip switch 2"],
+              ["Pull red", "Enter 24", "Flip Switch 1 and 3", "Pull green"],
+              ["Pull blue", "Enter 41", "Pull red and green", "Enter 231"]]
+
+sequence_hints = []
+sequence = []
+completed = False
+#gameOver = 0 # 0: stop, 1: play, 2: win, 3: lose
 #----[MAIN]----------------------------------------------------------
 # Start the game
 gui.play()
 
 # Main loop...
 while(gui.running):
-	# Update 
-	gui.update()
+    # Update 
+    gui.update()
 
-	# If easy mode selected...
-	if(gui.difficulty == "Easy"):
+    # If easy mode selected...
+    if(gui.difficulty == "Easy"):
 
-		# Generate an easy sequence if not already generated
-		if(sequence_loaded == None):
-			sequence_loaded = choice(easy_sequences)
-			sequence = sequence_loaded.keys()
+        gui.gameOver = 1
+        # Generate an easy sequence if not already generated
+        if(len(sequence) == 0):
+            sequence = choice(easy_sequences)
+            sequence_hints = easy_hints[easy_sequences.index(sequence)]
 
-	# If user not on a game difficulty, unload sequence
-	if(gui.difficulty == "None"):
-		sequence_loaded = None
+    # If user not on a game difficulty, unload sequence
+    if(gui.difficulty == "None"):
+        sequence = []
 
-	# Else...
-	else:
-		# Run first sequence, check if it is completed
-		completed = io.run_Sequence(sequence[0])
+    # Else...
+    else:
+        if(len(sequence) > 0):
+            # Run first sequence, check if it is completed
+            completed = io.run_Sequence(sequence[0])
 
-		# Set the hint text
-		gui.hint.set_Text(sequence_loaded[sequence[0]])
+            # Set the hint text
+            gui.hint.set_Text(sequence_hints[0])
 
-		# If completed, go to next activity
-    	if(completed):
-    		del sequence[0]
-    		del sequence_loaded[0]
-    		completed = False
+    # If completed, go to next activity
+    if(completed):
+        del sequence_hints[0]
+        del sequence[0]
+        completed = False
 
-	window.update_idletasks()
-	window.update()
-	sleep(0.01)
+    if(gui.game_over == 1):
+        if(len(sequence) == 0):
+            print "You Win!"
+            gui.game_over = 2
+
+        elif(gui.timer.end):
+            print "You Lose!"
+            gui.game_over = 3
+
+    window.update_idletasks()
+    window.update()
+    sleep(0.01)
 
 # Clean up the hardware
 closeGame(io)

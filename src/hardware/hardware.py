@@ -13,21 +13,21 @@ DEBUG = bool(os.getenv('DEBUG', False))
 # Class to handle hardware
 class HardIO(object):
 
-	# Pins used
-    INPUTS = [5, 4, 22, 23, 24, 25, 26, 27, 12, 6]
-    OUTPUTS = [18, 19, 20, 21, 17, 16, 13]
+    # Pins used
+    INPUTS = [17, 16, 13, 18, 19, 20, 21, 22, 23, 24]
+    OUTPUTS = [12, 6, 5, 4, 25, 26, 27]
 
     def __init__(self):
-    	# Set up the pinmode to use
+        # Set up the pinmode to use
         GPIO.setmode(GPIO.BCM)
 
         if (DEBUG):
             print "[H.I/O] Set pin numbering scheme to Broadcom. Hardware Initialization has begun."
 
-		if (DEBUG):
-			print "[H.I/O] Setup input and output pins."
+        if (DEBUG):
+            print "[H.I/O] Setup input and output pins."
 
-		# Set up input and output pins
+        # Set up input and output pins
         GPIO.setup(HardIO.INPUTS, GPIO.IN, GPIO.PUD_DOWN)
         GPIO.setup(HardIO.OUTPUTS, GPIO.OUT)
 
@@ -42,16 +42,16 @@ class HardIO(object):
     	# Check what operation to do
     	# f: check switches, p: check wires, e: check numpad
     	if(sequence[0] == "f"):
-    		completed = self.switches(sequence[1:])
+    	    completed = self.switches(sequence[1:])
 
     	elif(sequence[0] == "p"):
-    		completed = self.switches(sequence[1:])
+    	    completed = self.wires(sequence[1:])
 
     	elif(sequence[0] == "e"):
-    		# Load the code to use
-    		code = [int(c) for c in sequence[1:]]
+    	    # Load the code to use
+    	    code = [int(c) for c in sequence[1:]]
 
-    		completed = self.numpad(code)
+    	    completed = self.numpad(code)
 
     	return completed
 
@@ -59,30 +59,30 @@ class HardIO(object):
     # Value is a string containing 3 integers either 0 or 1
     def RGB(self, value):
     	# What pins to light: R-17 G-16 B-13
-    	pinMapping = [17, 16, 13]
+    	pinMapping = [25, 26, 27]
 
     	# Light the LED
     	for i, pin in enumerate(pinMapping):
-    		GPIO.output( pin, int(value[i]) )
+    	    GPIO.output( pin, int(value[i]) )
 
     # Controls the 7-seg display
     # Value is a string containing two digits: 3, 6, F
     def seven_Seg(self, value):
         # Map string values to pin numbers
-        pinMapping = {"3":18, "6":19, "F":20}
+        pinMapping = {"3":12, "6":6, "F":5}
 
-		# Turn left side of 7-seg on
-		# Turn on path for 3, 6, or F
-		GPIO.output( pinMapping[value[0]], 1 )
-		GPIO.output( 21, 0 )
+        # Turn left side of 7-seg on
+        # Turn on path for 3, 6, or F
+        GPIO.output( pinMapping[value[0]], 1 )
+        GPIO.output( 4, 0 )
 
         sleep(.01)
 
-		# Turn right side of 7-seg on
-		# Turn on path for 3, 6, or F
-		GPIO.output( pinMapping[value[0]], 0 )
-		GPIO.output( pinMapping[value[1]], 1 )
-		GPIO.output( 21, 1 )
+        # Turn right side of 7-seg on
+        # Turn on path for 3, 6, or F
+        GPIO.output( pinMapping[value[0]], 0 )
+        GPIO.output( pinMapping[value[1]], 1 )
+        GPIO.output( 4, 1 )
 
         sleep(.01)
 
@@ -94,17 +94,26 @@ class HardIO(object):
     # 3rd wire should read high while 2nd wire reads low
     # Returns true if value = wire input
     def wires(self, value):
-    	# What pins to check
-    	pinMapping = [5, 4, 22]
+        # What pins to check
+        pinMapping = [20, 19, 18]
 
-    	# Record wire states
-    	_input = "".join( [GPIO.input(pin) for pin in pinMapping] )
+        # Record wire states
+        _input = [GPIO.input(pin) for pin in pinMapping]
 
-    	if(value == _input):
-    		return True
+        for i in range(len(_input)):
+            if(_input[i] == True):
+                _input[i] = "1"
 
-    	else:
-    		return False
+            else:
+                _input[i] = "0"
+
+        _input = "".join(_input)
+
+        if(value == _input):
+            return True
+
+        else:
+            return False
 
     # Reads what switches are flipped
     # Value is a string containing three digits representing what
@@ -112,34 +121,43 @@ class HardIO(object):
     # 3rd switch should read high while 2nd switch reads low
     # Returns true if value = switch input
     def switches(self, value):
-    	# What pins to check
-    	pinMapping = [27, 12, 6]
+        # What pins to check
+        pinMapping = [17, 16, 13]
 
-    	# Record wire states
-    	_input = "".join( [GPIO.input(pin) for pin in pinMapping] )
+        # Record wire states
+        _input = [not GPIO.input(pin) for pin in pinMapping]
+    	
+        for i in range(len(_input)):
+            if(_input[i] == True):
+                _input[i] = "1"
 
-    	if(value == _input):
-    		return True
+            else:
+                _input[i] = "0"
 
-    	else:
-    		return False
+        _input = "".join(_input)
+
+        if(value == _input):
+            return True
+
+        else:
+            return False
 
     # Controls and handles numpad
     # code is an array of numbers using 1, 2, 3, or 4
     def numpad(self, code):
         # What pins to check
-        pinMapping = [23, 24, 25, 26]
+        pinMapping = [23, 24, 21, 22]
 
         pressed = []
 
         if not(self.set):
-        	self.copy = [i-1 for i in code]
-        	self.set = True
+            self.copy = [i-1 for i in code]
+            self.set = True
         
         # If more buttons in sequence need to be pressed...
         if(len(self.copy) > 0):
 
-        	# Read state of each pin
+            # Read state of each pin
             for pin in pinMapping: 
             	pressed.append(GPIO.input(pin))
 
@@ -152,7 +170,7 @@ class HardIO(object):
             	# If one button is pressed...
                 if(pressed.count(1) == 1):
 
-                	# Record its index
+                    # Record its index
                     active_index = pressed.index(1)
 
                     # Check if current button's index is the next button in 
@@ -191,33 +209,39 @@ if(__name__ == "__main__"):
     hIO = HardIO()
 
     # List containing the sequence to perform
-    sequence = ["f101", "p011", "e21324"]
+    sequence = ["f101", "e21324", "p011"]
     # List containing what to display on 7-seg
     display_7 = ["36", "6F", "F6"]
 
     completed = False
 
+    print sequence[0]
+
     # Loop while there is a sequence
     while(len(sequence) > 0):
 
-    	# Run the current activity
-    	# Check if its completed
-    	completed = hIO.run_Sequence(sequence[0])
+        # Run the current activity
+        # Check if its completed
+        completed = hIO.run_Sequence(sequence[0])
 
-    	# If completed, go to next activity and next 7-seg display
-    	if(completed):
-    		del sequence[0]
-    		del display_7[0]
-    		completed = False
+        # If completed, go to next activity and next 7-seg display
+        if(completed):
+            del sequence[0]
+            del display_7[0]
+
+            if(len(sequence) > 0):
+                print sequence[0]
+
+            completed = False
 
         sleep(.01)
 
     # Flash LED green when the sequence is complete
     for i in range(10):
-	    hIO.RGB("010")
-	    sleep(.5)
+        hIO.RGB("010")
+        sleep(.5)
 
-	    hIO.RGB("000")
-	    sleep(.5)
+        hIO.RGB("000")
+        sleep(.5)
 
-	hIO.destroy()
+    hIO.destroy()

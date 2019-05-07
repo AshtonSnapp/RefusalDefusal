@@ -25,6 +25,7 @@ class Game(Frame):
 
 		self.events = []
 		self.running = True
+		self.game_over = 0
 
 		self.hint_text = ""
 
@@ -88,8 +89,10 @@ class Game(Frame):
 
 		# Create timer
 		self.timer = Timer(Game.display)
-		self.timer.set(180)
+		self.timer.set(15)
 		self.timer.start()
+
+		self.game_over = 1
 
 	# Setup GUI for medium mode
 	def setupMediumMode(self):
@@ -192,20 +195,25 @@ class Game(Frame):
 		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-	def setupGameOver(self):
+	def setupEnd(self):
 		Game.display = Frame(self, bg="white")
-		self.master.title("Game Over")
-		self.difficulty = "Game Over"
+		self.master.title("GAMEOVER")
+		self.difficulty = "None"
 
 		# Create back button
 		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-		# Display Game Over
+		# Display text
 		text = Text(Game.display, height=1, width=13, font=(Game.FONT, 34, "bold"), relief="flat")
 		text.place(x=WIDTH/2-125, y=HEIGHT/2-100)
 
-		text.insert("1.0", "GAME OVER")
+                if(self.game_over == 2):
+                        text.insert("1.0", "YOU WIN")
+
+                elif(self.game_over == 3):
+                        text.insert("1.0", "YOU LOSE")
+                        
 		text.config(state=DISABLED)
 
 	# Start the game at the home screen
@@ -217,7 +225,7 @@ class Game(Frame):
 		# Stop the mainloop if exiting
 		if(setupFunc == "EXIT"):
 			self.running = False
-			return
+			self.master.destroy()
 
 		# Clear the screen and any events stored
 		Game.display.destroy()
@@ -231,19 +239,24 @@ class Game(Frame):
 	def handleTimer(self):
 		self.timer.update()
 
-		if(self.timer.end):
-			self.loadScreen(self.setupGameOver)
+		#if(self.timer.end):
+			#self.loadScreen(self.setupEnd)
 
 	# Run events stored in self.events
 	def update(self):
 		if not(self.difficulty == "None" or self.difficulty == "Game Over"):
-			self.handleTimer()
+                        if(self.game_over == 1):
+                                self.handleTimer()
+
+                        else:
+                                self.loadScreen(self.setupEnd)
+                                self.game_over = 0
 
 
 class Hint(Text):
 
 	def __init__(self, master):
-		Text.__init__(self, master, height=1, width=5, relief="flat", font=("Helvetica", 34, "bold"))
+		Text.__init__(self, master, height=5, width=25, relief="flat", wrap=WORD, font=("Helvetica", 12, "bold"))
 
 		self.place(x=WIDTH/2-50, y=HEIGHT/2)
 		self.state = DISABLED
@@ -348,7 +361,7 @@ def setup():
 	HEIGHT = 480
 
 	window = Tk()
-	window.overrideredirect(1)
+	#window.overrideredirect(1)
 	window.geometry("{}x{}".format(WIDTH, HEIGHT))
 
 	return Game(window), window

@@ -37,20 +37,20 @@ while(True):
     try:
         # Turn on LED for the right side
         # Turn off LED for the left side
-        # Set the side selector to LOW (right side)
+        # Set the side selector to HIGH (right side)
         GPIO.output(gpio[left_index], 0)
         GPIO.output(gpio[right_index], 1)
         
-        GPIO.output(gpio[0], 0)
+        GPIO.output(gpio[0], 1)
 
         sleep(.005)
 
         # Turn on LED for the left side
         # Turn off LED for the right side
-        # Set the side selector to HIGH (left side)
+        # Set the side selector to LOW (left side)
         GPIO.output(gpio[right_index], 0)
         GPIO.output(gpio[left_index], 1)
-        GPIO.output(gpio[0], 1)
+        GPIO.output(gpio[0], 0)
 
         sleep(.005)
 
