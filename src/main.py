@@ -44,8 +44,7 @@ easy_hints = [["Flip switch 1", "Pull green and blue", "Enter 413", "Flip switch
 
 sequence_hints = []
 sequence = []
-completed = False
-#gameOver = 0 # 0: stop, 1: play, 2: win, 3: lose
+completed = 0
 #----[MAIN]----------------------------------------------------------
 # Start the game
 gui.play()
@@ -62,7 +61,7 @@ while(gui.running):
         # Generate an easy sequence if not already generated
         if(len(sequence) == 0):
             sequence = choice(easy_sequences)
-            sequence_hints = easy_hints[easy_sequences.index(sequence)]
+            sequence_hints = easy_hints[ easy_sequences.index(sequence) ]
 
     # If user not on a game difficulty, unload sequence
     if(gui.difficulty == "None"):
@@ -82,6 +81,18 @@ while(gui.running):
         del sequence_hints[0]
         del sequence[0]
         completed = False
+
+    # If completed == 0 (Not Complete), light LED blue
+    if(completed == 0):
+    	io.RGB("001")
+
+    # If completed == 1 (Failed), light LED red
+    if(completed == 1):
+    	io.RGB("100")
+
+    # If completed == 2 (Success), light LED green
+    if(completed == 1):
+    	io.RGB("010")
 
     if(gui.game_over == 1):
         if(len(sequence) == 0):

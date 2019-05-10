@@ -36,15 +36,21 @@ class HardIO(object):
         self.set = False
         self.copy = []
 
+        # Variables to check if a state has changed
+        self.state_changed = False
+        self.last_state = None
+
     def run_Sequence(self, sequence):
     	completed = False
 
     	# Check what operation to do
     	# f: check switches, p: check wires, e: check numpad
     	if(sequence[0] == "f"):
+            self.last_state = sequence[1:]
     	    completed = self.switches(sequence[1:])
 
     	elif(sequence[0] == "p"):
+            self.last_state = sequence[1:]
     	    completed = self.wires(sequence[1:])
 
     	elif(sequence[0] == "e"):
@@ -92,7 +98,8 @@ class HardIO(object):
     # Value is a string containing three digits representing what
     # wires should read high and low; ex: "101" means 1st and
     # 3rd wire should read high while 2nd wire reads low
-    # Returns true if value = wire input
+    # Returns 2 if value = wire input, 1 if value != wire input
+    # 0 if the state has not changed
     def wires(self, value):
         # What pins to check
         pinMapping = [20, 19, 18]
@@ -109,11 +116,24 @@ class HardIO(object):
 
         _input = "".join(_input)
 
-        if(value == _input):
-            return True
+        # Check if state has changed
+        if(_input != self.last_state):
+            self.state_changed = True
+        else:
+            self.state_changed = False
+
+        self.last_state = _input
+
+        # If state is different, check if it is the correct state
+        if(self.state_changed):
+            if(value == _input):
+                return 2
+
+            elif(value != _input):
+                return 1
 
         else:
-            return False
+            return 0
 
     # Reads what switches are flipped
     # Value is a string containing three digits representing what
