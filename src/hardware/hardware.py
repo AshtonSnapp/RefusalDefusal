@@ -222,9 +222,6 @@ class HardIO(object):
             print "[H.I/O] Cleaned up all the GPIO pins. We're done here boys!"
 
 
-# List of lists of sequences, which are lists of things to do. First index is difficulty, second index is choice, third index is step.
-#sequences = [[['flip(1)', 'pull([2, 3])', 'enter([4, 1, 3])', 'flip(1)'], ['pull(1)', 'enter([2, 4])', 'flip([3, 1])', 'pull(1)'], ['flip(2)', 'pull([1, 3])', 'enter(2)', 'pull([2,3])', 'flip(2)'], ['', '', '', '', '']], [[], [], [], []], [[], [], [], []], [[], [], [], []]]
-
 if(__name__ == "__main__"):
     hIO = HardIO()
 

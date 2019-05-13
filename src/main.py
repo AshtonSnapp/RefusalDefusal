@@ -11,6 +11,7 @@
 import hardware.hardware as hw
 import logic.rhClasses as rohe
 import graphics.gui as GUI
+import Sequences.Sequence_Generator as Seq_Gen
 from random import randint, choice
 from time import sleep
 
@@ -26,31 +27,38 @@ def closeGame(hard_io):
 
 #----[SETUP]---------------------------------------------------------
 io = hw.HardIO()
+gen = Seq_Gen.SequenceGenerator()
 
 # Setup the game
 gui, window = GUI.setup()
 
 # List of easy mode sequences
 # Each sequence has an activity and a hint for that activity
-easy_sequences = [["f100", "p100", "e43", "f000"], 
+sequences = [["f100", "p100", "e43", "f000"], 
 		  ["f010", "p010", "e23", "f000"], 
-		  ["p011", "e24", "f101", "p001"], 
+		  ["p011", "e42", "f101", "p001"], 
 		  ["p110", "e41", "p000", "e23"]]
 
-easy_hints = [["It's lights out for this robot!", "Just line 'em up and knock 'em down!", "I metaphor once. He wanted to be a 3.", "How many people does it take to screw in a light bulb? Two! One to"\
-               "screw it in, and another to hold the chair steady... did I say it right?"],
+hints = [["It's lights out for this robot!", "Just line 'em up and knock 'em down!", "I metaphor once. He wanted to be a 3.", "How many people does it take to screw in a light bulb? Two! One to\
+               screw it in, and another to hold the chair steady... did I say it right?"],
               ["How many people does it take to screw in a light bulb? Two! One to screw it in, and another to hold the chair steady... did I say it right?",\
                "Try pulling her finger. You never know what might happen.", "I'll help you. I just hope I'm not pressing your buttons champ.", "It's lights out for this robot!"],
-              ["Just line 'em up and knock 'em down!", "I metaphor once. He wanted to be a 3.", "It's lights out for this robot!", "Try pulling her finger. You never know what might happen."],
+              ["Just line 'em up and knock 'em down!", "I metaphor once. He wanted to be a 2.", "It's lights out for this robot!", "Try pulling her finger. You never know what might happen."],
               ["Try pulling her finger. You never know what might happen.", "I metaphor once. He wanted to be a 3.", "Just line 'em up and knock 'em down!",\
                "I'll help you. I just hope I'm not pressing your buttons champ."]]
 
-medium_sequences = [["e42", "p100", "f100", "f001", "e31"],
+for i, sequence in enumerate(sequences):
+	gen.addSeq("Easy", sequence, hints[i])
+
+
+# List of medium mode sequences
+# Each sequence has an activity and a hint for that activity
+sequences = [["e42", "p100", "f100", "f001", "e31"],
                     ["f101", "p010", "e2143", "p000", "f000"],
                     ["f110", "e12", "p110", "e3243", "f011"],
                     ["e34", "p100", "f110", "p000", "e4112"]]
 
-medium_hints = [["Don't fret over a lawsuit. You can leave those pressing matters to me. Having said that, please don't fail.", "My hair will likely disintegrate if I haven't already pulled it out.",\
+hints = [["Don't fret over a lawsuit. You can leave those pressing matters to me. Having said that, please don't fail.", "My hair will likely disintegrate if I haven't already pulled it out.",\
                  "I knew I should've switched jobs last week.", "My boss will flip when he hears this!", "According to my calcula- WAIT, where's my calculator?!"],
                 ["I knew I should've switched jobs last week.", "My hair will likely disintegrate if I haven't already pulled it out.", "Don't fret over a lawsuit. You can leave those pressing matters to me. Having said that, please don't fail.",\
                  "I really hope this doesn't affect the city's power lines.", "I knew I should've switched jobs last week."],
@@ -59,12 +67,18 @@ medium_hints = [["Don't fret over a lawsuit. You can leave those pressing matter
                 ["Don't fret over a lawsuit. You can leave those pressing matters to me. Having said that, please don't fail.", "I really hope this doesn't affect the city's power lines.",\
                  "I knew I should've switched jobs last week.", "My hair will likely disintegrate if I haven't already pulled it out.", "According to my calcula- WAIT, where's my calculator?!"]]
 
-hard_sequences = [["f110", "p101", "e1424", "f100", "p100"],
+for i, sequence in enumerate(sequences):
+	gen.addSeq("Medium", sequence, hints[i])
+
+
+# List of hard mode sequences
+# Each sequence has an activity and a hint for that activity
+sequences = [["f110", "p101", "e1424", "f100", "p100"],
                   ["p110", "f010", "f000", "e4431", "p010", "e2233"],
                   ["f111", "p010", "e4131", "f001", "e22"],
                   ["e4121", "p001", "f001", "e2114", "f010", "p000"]]
 
-hard_hints = [["If you survive this, feel free to come over and play on my switch.", "Firmly grasp it bro!", "...Have you tried pressing the reset button?", \
+hints = [["If you survive this, feel free to come over and play on my switch.", "Firmly grasp it bro!", "...Have you tried pressing the reset button?", \
                "I'm having a hard time seeing the problem here. Got a light?", "Why're you building a robot anyway when you could be relaxing?"],
               ["Why're you building a robot anyway when you could be relaxing?", "If you survive this, feel free to come over and play on my switch.", "If you survive this, feel free to come over and play on my switch.", \
                "...Have you tried pressing the reset button?", "Firmly grasp it bro!", "To succeed here, you must enter a new state of being. That's what a fortune cookie told me at least."],
@@ -75,12 +89,18 @@ hard_hints = [["If you survive this, feel free to come over and play on my switc
                "To succeed here, you must enter a new state of being. That's what a fortune cookie told me at least.", "I'm having a hard time seeing the problem here. Got a light?", \
                "Why're you building a robot anyway when you could be relaxing?"]]
 
-realLife_sequences = [["f101", "p011", "e1424", "f100", "p010"],
+for i, sequence in enumerate(sequences):
+	gen.addSeq("Hard", sequence, hints[i])
+
+
+# List of real life mode sequences
+# Each sequence has an activity and a hint for that activity
+sequences = [["f101", "p011", "e1424", "f100", "p010"],
                       ["p110", "f010", "f000", "e1344", "p010", "e2331"],
                       ["f111", "p010", "e4131", "f001", "e22"],
                       ["e4121", "p001", "f001", "e2234", "f010", "p000"]]
 
-realLife_hints = [["If you're not successful I'll have to switch your sleeping bag with a body bag.", "You'd better find your head and pull it out before I do it for you!", \
+hints = [["If you're not successful I'll have to switch your sleeping bag with a body bag.", "You'd better find your head and pull it out before I do it for you!", \
                    "A good soldier always presses on.", "I've seen someone defuse a bomb while flipping and sprinting. What's your excuse?", \
                    "Pull up your britches and get to defusing maggot!"],
                   ["You'd better find your head and pull it out before I do it for you!", "I've seen someone defuse a bomb while flipping and sprinting. What's your excuse?", \
@@ -91,10 +111,11 @@ realLife_hints = [["If you're not successful I'll have to switch your sleeping b
                   ["A good soldier always presses on.", "Pull up your britches and get to defusing maggot!", "If you're not successful I'll have to switch your sleeping bag with a body bag.", \
                    "Drop and give me 20!", "I've seen someone defuse a bomb while flipping and sprinting. What's your excuse?", "Pull up your britches and get to defusing maggot!"]]
 
-sequence_hints = []
-sequence = []
+for i, sequence in enumerate(sequences):
+	gen.addSeq("RealLife", sequence, hints[i])
+
+
 completed = False
-#gameOver = 0 # 0: stop, 1: play, 2: win, 3: lose
 #----[MAIN]----------------------------------------------------------
 # Start the game
 gui.play()
@@ -109,55 +130,58 @@ while(gui.running):
 
         gui.gameOver = 1
         # Generate an easy sequence if not already generated
-        if(len(sequence) == 0):
-            sequence = choice(easy_sequences)
-            sequence_hints = easy_hints[easy_sequences.index(sequence)]
+        if(gen.getSeqLen() == 0):
+            gen.genSequence("Easy")
 
-    if(gui.difficulty == "Medium"):
 
-        gui.gameOver = 1
-
-        if(len(sequence) == 0):
-            sequence = choice(medium_sequences)
-            sequence_hints = medium_hints[medium_sequences.index(sequence)]
-
-    if(gui.difficulty == "Hard"):
+    # If medium mode selected...
+    elif(gui.difficulty == "Medium"):
 
         gui.gameOver = 1
+        # Generate a medium sequence if not already generated
+        if(gen.getSeqLen() == 0):
+            gen.genSequence("Medium")
 
-        if(len(sequence) == 0):
-            sequence = choice(hard_sequences)
-            sequence_hints = hard_hints[hard_sequences.index(sequence)]
 
-    if(gui.difficulty == "Real Life"):
+    # If hard mode selected...
+    elif(gui.difficulty == "Hard"):
 
         gui.gameOver = 1
+        # Generate a hard sequence if not already generated
+        if(gen.getSeqLen() == 0):
+            gen.genSequence("Hard")
 
-        if(len(sequence) == 0):
-            sequence = choice(realLife_sequences)
-            sequence_hints = realLife_hints[realLife_sequences.index(sequence)]
+
+    # If real life mode selected...
+    elif(gui.difficulty == "Real Life"):
+
+        gui.gameOver = 1
+        # Generate a RealLife sequence if not already generated
+        if(gen.getSeqLen() == 0):
+            gen.genSequence("RealLife")
+
 
     # If user not on a game difficulty, unload sequence
-    if(gui.difficulty == "None"):
-        sequence = []
+    if(gui.difficulty == "None" and gen.getSeqLen() != 0):
+        gen.clearSeq()
 
     # Else...
     else:
-        if(len(sequence) > 0):
-            # Run first sequence, check if it is completed
-            completed = io.run_Sequence(sequence[0])
+        if(gen.getSeqLen() > 0):
+            # Run first sequence, record if it is completed
+            completed = io.run_Sequence( gen.getAct() )
 
             # Set the hint text
-            gui.hint.set_Text(sequence_hints[0])
+            gui.hint.set_Text( gen.getHint() ) 
 
     # If completed, go to next activity
     if(completed):
-        del sequence_hints[0]
-        del sequence[0]
+        gen.remAct()
         completed = False
 
+    # Decide if the player won or lost
     if(gui.game_over == 1):
-        if(len(sequence) == 0):
+        if(gen.getSeqLen() == 0):
             print "You Win!"
             gui.game_over = 2
 
