@@ -75,7 +75,21 @@ hard_hints = [["If you survive this, feel free to come over and play on my switc
                "To succeed here, you must enter a new state of being. That's what a fortune cookie told me at least.", "I'm having a hard time seeing the problem here. Got a light?", \
                "Why're you building a robot anyway when you could be relaxing?"]]
 
+realLife_sequences = [["f101", "p011", "e1424", "f100", "p010"],
+                      ["p110", "f010", "f000", "e1344", "p010", "e2331"],
+                      ["f111", "p010", "e4131", "f001", "e22"],
+                      ["e4121", "p001", "f001", "e2234", "f010", "p000"]]
 
+realLife_hints = [["If you're not successful I'll have to switch your sleeping bag with a body bag.", "You'd better find your head and pull it out before I do it for you!", \
+                   "A good soldier always presses on.", "I've seen someone defuse a bomb while flipping and sprinting. What's your excuse?", \
+                   "Pull up your britches and get to defusing maggot!"],
+                  ["You'd better find your head and pull it out before I do it for you!", "I've seen someone defuse a bomb while flipping and sprinting. What's your excuse?", \
+                   "If you're not successful I'll have to switch your sleeping bag with a body bag.", "Drop and give me 20!", \
+                   "You'd better find your head and pull it out before I do it for you!", "A good soldier always presses on."],
+                  ["I've seen someone defuse a bomb while flipping and sprinting. What's your excuse?", "You'd better find your head and pull it out before I do it for you!", \
+                  "A good soldier always presses on.", "If you're not successful I'll have to switch your sleeping bag with a body bag.", "Drop and give me 20!"],
+                  ["A good soldier always presses on.", "Pull up your britches and get to defusing maggot!", "If you're not successful I'll have to switch your sleeping bag with a body bag.", \
+                   "Drop and give me 20!", "I've seen someone defuse a bomb while flipping and sprinting. What's your excuse?", "Pull up your britches and get to defusing maggot!"]]
 
 sequence_hints = []
 sequence = []
@@ -114,6 +128,14 @@ while(gui.running):
         if(len(sequence) == 0):
             sequence = choice(hard_sequences)
             sequence_hints = hard_hints[hard_sequences.index(sequence)]
+
+    if(gui.difficulty == "Real Life"):
+
+        gui.gameOver = 1
+
+        if(len(sequence) == 0):
+            sequence = choice(realLife_sequences)
+            sequence_hints = realLife_hints[realLife_sequences.index(sequence)]
 
     # If user not on a game difficulty, unload sequence
     if(gui.difficulty == "None"):
