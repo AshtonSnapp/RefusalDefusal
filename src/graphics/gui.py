@@ -208,12 +208,12 @@ class Game(Frame):
 		text = Text(Game.display, height=1, width=13, font=(Game.FONT, 34, "bold"), relief="flat")
 		text.place(x=WIDTH/2-125, y=HEIGHT/2-100)
 
-        if(self.game_over == 2):
-            text.insert("1.0", "YOU WIN")
+		if(self.game_over == 2):
+			text.insert("1.0", "YOU WIN")
 
-        elif(self.game_over == 3):
-            text.insert("1.0", "YOU LOSE")
-                        
+		elif(self.game_over == 3):
+			text.insert("1.0", "YOU LOSE")
+
 		text.config(state=DISABLED)
 
 	# Start the game at the home screen
@@ -242,12 +242,12 @@ class Game(Frame):
 	# Run events stored in self.events
 	def update(self):
 		if not(self.difficulty == "None" or self.difficulty == "Game Over"):
-            if(self.game_over == 1):
-                self.handleTimer()
+			if(self.game_over == 1):
+				self.handleTimer()
 
-            else:
-                self.loadScreen(self.setupEnd)
-                self.game_over = 0
+			else:
+				self.loadScreen(self.setupEnd)
+				self.game_over = 0
 
 
 class Hint(Text):
