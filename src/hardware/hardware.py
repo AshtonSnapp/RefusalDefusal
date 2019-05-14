@@ -5,7 +5,7 @@
 #		   Added function to run a sequence
 #####################################################################
 import RPi.GPIO as GPIO
-from time import sleep
+from time import sleep, time
 import os
 
 DEBUG = bool(os.getenv('DEBUG', False))
@@ -31,40 +31,153 @@ class HardIO(object):
         GPIO.setup(HardIO.INPUTS, GPIO.IN, GPIO.PUD_DOWN)
         GPIO.setup(HardIO.OUTPUTS, GPIO.OUT)
 
-        # Instance variables for handling the numpad
-        self.numpad_pause = False
-        self.set = False
-        self.copy = []
+        for pin in HardIO.OUTPUTS:
+            GPIO.output(pin, 0)
 
-        # Variables to check if a state has changed
-        self.state_changed = False
-        self.last_state = None
+        self.codeIn = ""
+        self.held = False
+        self.code_index = 1
+
+        self.wire_wait = 0
+        
+        self.seven_seg_counter = 0
+        self.seven_seg_index = -1
+
+        self.prev_wires = "111"
+        self.prev_switches = "000"
+        self.prev_code = ""
+
+        self.mistakes = 0
 
     def run_Sequence(self, sequence):
-    	completed = False
+        completed = False
+        
+        wires = self.wires()
+        switches = self.switches()
+        self.numpad()
 
-    	# Check what operation to do
-    	# f: check switches, p: check wires, e: check numpad
-    	if(sequence[0] == "f"):
-            self.last_state = sequence[1:]
-    	    completed = self.switches(sequence[1:])
+        # If the activity is to flip...
+        if(sequence[0] == "f"):
 
-    	elif(sequence[0] == "p"):
-            self.last_state = sequence[1:]
-    	    completed = self.wires(sequence[1:])
+            self.display_7_Seg(sequence, switches)
+            
+            # Check if the other inputs have changed; if so, add to mistakes
+            if(wires != self.prev_wires or self.codeIn != self.prev_code):
+                self.mistakes += 1
 
-    	elif(sequence[0] == "e"):
-    	    # Load the code to use
-    	    code = [int(c) for c in sequence[1:]]
+                # Reset code
+                self.codeIn = ""
 
-    	    completed = self.numpad(code)
+            # If switch status has changed and equals the sequence, return true for completed
+            elif(switches != self.prev_switches and switches == sequence[1:]):
+                completed = True
 
-    	return completed
+            # If switch status has changed and not equals the sequence...
+            elif(switches != self.prev_switches and switches != sequence[1:]):
+                
+                # Add to mistakes however many wrong switches flipped...
+                for i in range(3):
+                    if(switches[i] != self.prev_switches[i] and switches[i] != sequence[i+1]):
+                        self.mistakes += 1
 
+        # If the activity is to pull...
+        elif(sequence[0] == "p"):
+
+            self.display_RGB(sequence[1:])
+            
+            # Check if the other inputs have changed; if so, add to mistakes
+            if(switches != self.prev_switches or self.codeIn != self.prev_code):
+                self.mistakes += 1
+
+                # Reset code
+                self.codeIn = ""
+
+            # If wire status has changed and equals the sequence, return true for completed
+            elif(wires != self.prev_wires and wires == sequence[1:]):
+                completed = True
+
+            # If wire status has changed and not equals the sequence...
+            elif(wires != self.prev_wires and wires != sequence[1:]):
+                
+                # Add to mistakes however many wrong wires pulled...
+                for i in range(3):
+                    if(wires[i] != self.prev_wires[i] and wires[i] != sequence[i+1]):
+                        self.mistakes += 1
+
+        # If the activity is to enter...
+        elif(sequence[0] == "e"):
+
+            self.display_7_Seg(sequence)
+            
+            # Check if the other inputs have changed; if so, add to mistakes
+            if(switches != self.prev_switches or wires != self.prev_wires):
+                self.mistakes += 1
+
+            # If code status has changed and equals the sequence, return true for completed
+            elif(self.codeIn != self.prev_code and self.codeIn == sequence[1:]):
+                completed = True
+
+             # If code status has changed and equals the sequence, return true for completed
+            elif(self.codeIn != self.prev_code and self.codeIn != sequence[1:self.code_index]):
+                self.mistakes += 1
+                self.codeIn = ""
+                self.code_index = 1
+
+        self.prev_wires = wires
+        self.prev_switches = switches
+        self.prev_code = self.codeIn
+        
+        return completed
+
+    def display_RGB(self, sequence):
+        light = ""
+
+        for s in sequence:
+            if(s == "1"): light += "0"
+            else: light += "1"
+
+        self.RGB(light)
+
+    def display_7_Seg(self, value, _input=None):
+        sequence = value[1:]
+        timing = time()
+
+        if(value[0] == "f"):
+            if( abs(time()-self.seven_seg_counter) > .5):
+                self.seven_seg_counter = time()
+                self.seven_seg_index += 1
+                
+                if(self.seven_seg_index >= 3):
+                    self.seven_seg_index = 0
+
+            if(sequence[self.seven_seg_index] != _input[self.seven_seg_index]):
+                self.seven_Seg("0" + str(self.seven_seg_index+1))
+
+        elif(value[0] == "e"):
+            if( timing-self.seven_seg_counter > .75):
+                
+                self.seven_seg_index += 1
+                if(self.seven_seg_index >= len(sequence)):
+                    self.seven_seg_index = 0
+
+                if(self.seven_seg_index == len(sequence)-1):
+                    self.seven_seg_counter = time() + .5
+
+                else:
+                    self.seven_seg_counter = time()
+
+            if( timing-self.seven_seg_counter < .5 ):
+                if(sequence[self.seven_seg_index] != "4"):
+                    self.seven_Seg("0" + sequence[self.seven_seg_index])
+
+                else:
+                    self.seven_Seg("02")
+                    self.seven_Seg("12")
+                
     # Controls RGB LED
     # Value is a string containing 3 integers either 0 or 1
     def RGB(self, value):
-    	# What pins to light: R-17 G-16 B-13
+    	# What pins to light: R-25 G-26 B-27
     	pinMapping = [25, 26, 27]
 
     	# Light the LED
@@ -72,27 +185,20 @@ class HardIO(object):
     	    GPIO.output( pin, int(value[i]) )
 
     # Controls the 7-seg display
-    # Value is a string containing two digits: 3, 6, F
+    # Value is a string containing two digits: 0, 1, 2, 3
     def seven_Seg(self, value):
         # Map string values to pin numbers
-        pinMapping = {"3":12, "6":6, "F":5}
+        pinMapping = {"1":6, "2":5, "3":4}
 
-        # Turn left side of 7-seg on
-        # Turn on path for 3, 6, or F
-        GPIO.output( pinMapping[value[0]], 1 )
-        GPIO.output( 4, 0 )
+        # Turn a side of 7-seg on
+        # Turn on path for 1, 2, 3
+        if(value[1] != "0"):
+            GPIO.output( pinMapping[value[1]], 1 )
+            GPIO.output( 12, int(value[0]) )
 
-        sleep(.01)
-
-        # Turn right side of 7-seg on
-        # Turn on path for 3, 6, or F
-        GPIO.output( pinMapping[value[0]], 0 )
-        GPIO.output( pinMapping[value[1]], 1 )
-        GPIO.output( 4, 1 )
-
-        sleep(.01)
-
-        GPIO.output( pinMapping[value[1]], 0 )
+            sleep(.01)
+            
+            GPIO.output( pinMapping[value[1]], 0 )
 
     # Reads what wires are plugged in
     # Value is a string containing three digits representing what
@@ -100,7 +206,7 @@ class HardIO(object):
     # 3rd wire should read high while 2nd wire reads low
     # Returns 2 if value = wire input, 1 if value != wire input
     # 0 if the state has not changed
-    def wires(self, value):
+    def wires(self):
         # What pins to check
         pinMapping = [20, 19, 18]
 
@@ -116,31 +222,20 @@ class HardIO(object):
 
         _input = "".join(_input)
 
-        # Check if state has changed
-        if(_input != self.last_state):
-            self.state_changed = True
-        else:
-            self.state_changed = False
+        if( abs(time()-self.wire_wait) > 0.5 and _input != self.prev_wires):
+            self.wire_wait = time()
 
-        self.last_state = _input
-
-        # If state is different, check if it is the correct state
-        if(self.state_changed):
-            if(value == _input):
-                return 2
-
-            elif(value != _input):
-                return 1
+            return _input
 
         else:
-            return 0
+            return self.prev_wires
 
     # Reads what switches are flipped
     # Value is a string containing three digits representing what
     # switches should read high and low; ex: "101" means 1st and
     # 3rd switch should read high while 2nd switch reads low
     # Returns true if value = switch input
-    def switches(self, value):
+    def switches(self):
         # What pins to check
         pinMapping = [17, 16, 13]
 
@@ -156,63 +251,31 @@ class HardIO(object):
 
         _input = "".join(_input)
 
-        if(value == _input):
-            return True
-
-        else:
-            return False
+        return _input
 
     # Controls and handles numpad
     # code is an array of numbers using 1, 2, 3, or 4
-    def numpad(self, code):
+    def numpad(self):
         # What pins to check
         pinMapping = [23, 24, 21, 22]
 
-        pressed = []
+        pressed = [GPIO.input(pin) for pin in pinMapping]
+        any_pressed = False
 
-        if not(self.set):
-            self.copy = [i-1 for i in code]
-            self.set = True
-        
-        # If more buttons in sequence need to be pressed...
-        if(len(self.copy) > 0):
+        for i in pressed:
+            if(i): any_pressed = True
 
-            # Read state of each pin
-            for pin in pinMapping: 
-            	pressed.append(GPIO.input(pin))
+        if(any_pressed and not self.held):
+            self.held = True
+            self.code_index += 1
+                        
+            if(pressed[0]): self.codeIn += "1"
+            if(pressed[1]): self.codeIn += "2"
+            if(pressed[2]): self.codeIn += "3"
+            if(pressed[3]): self.codeIn += "4"
 
-            # Check if a button is being held down
-            if(self.numpad_pause):
-                self.numpad_pause = pressed.count(1) > 0
-
-            else:
-
-            	# If one button is pressed...
-                if(pressed.count(1) == 1):
-
-                    # Record its index
-                    active_index = pressed.index(1)
-
-                    # Check if current button's index is the next button in 
-                    # sequence; Remove button if yes
-                    if(self.copy[0] == active_index):
-                        del self.copy[0]
-
-                    # Reset sequence if no
-                    else:
-                        self.set = False
-
-                # If a button is pressed, pause numpad handling
-                # until button is unpressed
-                if(pressed.count(1) > 0):
-                    self.numpad_pause = True
-
-            return False
-
-        # If button sequence is empty, return true
-        else:
-            self.set = False
-            return True
+        elif(not any_pressed and self.held):
+            self.held = False
 
     # Cleanup the GPIO pins
     def destroy(self):
@@ -225,40 +288,16 @@ class HardIO(object):
 if(__name__ == "__main__"):
     hIO = HardIO()
 
-    # List containing the sequence to perform
-    sequence = ["f101", "e21324", "p011"]
-    # List containing what to display on 7-seg
-    display_7 = ["36", "6F", "F6"]
-
     completed = False
+    
+    while(True):
 
-    print sequence[0]
+        if(not completed):
+            completed = hIO.run_Sequence("e1234321")
 
-    # Loop while there is a sequence
-    while(len(sequence) > 0):
+        else:
+            break
 
-        # Run the current activity
-        # Check if its completed
-        completed = hIO.run_Sequence(sequence[0])
 
-        # If completed, go to next activity and next 7-seg display
-        if(completed):
-            del sequence[0]
-            del display_7[0]
-
-            if(len(sequence) > 0):
-                print sequence[0]
-
-            completed = False
-
-        sleep(.01)
-
-    # Flash LED green when the sequence is complete
-    for i in range(10):
-        hIO.RGB("010")
-        sleep(.5)
-
-        hIO.RGB("000")
-        sleep(.5)
-
+    
     hIO.destroy()

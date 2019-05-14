@@ -23,7 +23,7 @@ def closeGame(hard_io):
 
 	hard_io.destroy()
 
-	print closingRemarks[randint(0, len(closingRemarks) - 1)]
+	print choice(closingRemarks)
 
 #----[SETUP]---------------------------------------------------------
 io = hw.HardIO()
@@ -39,8 +39,7 @@ sequences = [["f100", "p100", "e43", "f000"],
 		  ["p011", "e42", "f101", "p001"], 
 		  ["p110", "e41", "p000", "e23"]]
 
-hints = [["It's lights out for this robot!", "Just line 'em up and knock 'em down!", "I metaphor once. He wanted to be a 3.", "How many people does it take to screw in a light bulb? Two! One to\
-               screw it in, and another to hold the chair steady... did I say it right?"],
+hints = [["It's lights out for this robot!", "Just line 'em up and knock 'em down!", "I metaphor once. He wanted to be a 3.", "How many people does it take to screw in a light bulb? Two! One to screw it in, and another to hold the chair steady... did I say it right?"],
               ["How many people does it take to screw in a light bulb? Two! One to screw it in, and another to hold the chair steady... did I say it right?",\
                "Try pulling her finger. You never know what might happen.", "I'll help you. I just hope I'm not pressing your buttons champ.", "It's lights out for this robot!"],
               ["Just line 'em up and knock 'em down!", "I metaphor once. He wanted to be a 2.", "It's lights out for this robot!", "Try pulling her finger. You never know what might happen."],
@@ -129,36 +128,44 @@ while(gui.running):
     if(gui.difficulty == "Easy"):
 
         gui.gameOver = 1
+        
         # Generate an easy sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("Easy")
+            io.mistakes = 0
 
 
     # If medium mode selected...
     elif(gui.difficulty == "Medium"):
 
         gui.gameOver = 1
+        
         # Generate a medium sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("Medium")
+            io.mistakes = 0
 
 
     # If hard mode selected...
     elif(gui.difficulty == "Hard"):
 
         gui.gameOver = 1
+        
         # Generate a hard sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("Hard")
+            io.mistakes = 0
 
 
     # If real life mode selected...
     elif(gui.difficulty == "Real Life"):
 
         gui.gameOver = 1
+        
         # Generate a RealLife sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("RealLife")
+            io.mistakes = 0
 
 
     # If user not on a game difficulty, unload sequence
@@ -182,16 +189,22 @@ while(gui.running):
     # Decide if the player won or lost
     if(gui.game_over == 1):
         if(gen.getSeqLen() == 0):
-            print "You Win!"
             gui.game_over = 2
 
         elif(gui.timer.end):
-            print "You Lose!"
+            gui.game_over = 3
+
+        elif(gui.difficulty == "Medium" and io.mistakes == 10):
+            gui.game_over = 3
+            
+        elif(gui.difficulty == "Hard" and io.mistakes == 5):
+            gui.game_over = 3
+
+        elif(gui.difficulty == "Real Life" and io.mistakes == 1):
             gui.game_over = 3
 
     window.update_idletasks()
     window.update()
-    sleep(0.01)
 
 # Clean up the hardware
 closeGame(io)
