@@ -62,13 +62,12 @@ class Game(Frame):
                 exitB = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Exit", command=lambda:self.loadScreen("EXIT"))
                 exitB.place(width=button_width, height=button_height, x=450, y=325)
 
-<<<<<<< HEAD
         # Setup GUI for easy mode
         def setupEasyMode(self):
                 Game.display = Frame(self, bg="white")
                 self.master.title("Easy Mode")
                 self.difficulty = "Easy"
-=======
+
 		# Create back button
 		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
@@ -78,7 +77,7 @@ class Game(Frame):
 
 		# Create timer
 		self.timer = Timer(Game.display)
-		self.timer.set(15)
+		self.timer.set(120)
 		self.timer.start()
 
 		self.game_over = 1
@@ -106,6 +105,8 @@ class Game(Frame):
 		self.timer.set(120)
 		self.timer.start()
 
+		self.game_over = 1
+
 	# Setup GUI for hard mode
 	def setupHardMode(self):
 		Game.display = Frame(self, bg="white")
@@ -128,6 +129,8 @@ class Game(Frame):
 		self.timer = Timer(Game.display)
 		self.timer.set(90)
 		self.timer.start()
+
+		self.game_over = 1
 
 	# Setup GUI for IRL mode
 	def setupRLMode(self):
@@ -152,7 +155,7 @@ class Game(Frame):
 		self.timer.set(60)
 		self.timer.start()
 
-		#self.events.append(self.handleTimer)
+		self.game_over = 1
 
 	# Setup GUI for the About Page
 	def setupAbout(self):
@@ -204,8 +207,7 @@ class Game(Frame):
 			text.insert("1.0", "YOU LOSE")
 
 		text.config(state=DISABLED)
->>>>>>> 68d7ed4aceaa6059ddfdc14435a27401fb923c91
-
+		
                 # Declare button specifics
                 button_width = 400
                 button_height = 40
@@ -231,7 +233,6 @@ class Game(Frame):
                 self.master.title("Medium Mode")
                 self.difficulty = "Medium"
 
-<<<<<<< HEAD
                 # Declare button specifics
                 button_width = 400
                 button_height = 40
@@ -384,7 +385,7 @@ class Game(Frame):
                     else:
                         self.loadScreen(self.setupEnd)
                         self.game_over = 0
-=======
+
 	# Run events stored in self.events
 	def update(self):
 		if not(self.difficulty == "None" or self.difficulty == "Game Over"):
@@ -394,7 +395,6 @@ class Game(Frame):
 			else:
 				self.loadScreen(self.setupEnd)
 				self.game_over = 0
->>>>>>> 68d7ed4aceaa6059ddfdc14435a27401fb923c91
 
 
 class Hint(Text):
