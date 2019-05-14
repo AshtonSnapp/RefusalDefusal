@@ -5,6 +5,7 @@
 #####################################################################
 from Tkinter import *
 from time import time, sleep
+from logic import rhClasses
 
 #----[CLASSES]-------------------------------------------------------
 # Game Class
@@ -12,7 +13,7 @@ class Game(Frame):
     FONT = "Verdana"
     FONT_SIZE = 12
 
-        # Initialize the main frame and sub-frame
+    # Initialize the main frame and sub-frame
     def __init__(self, master):
         Frame.__init__(self, master)
 
@@ -29,39 +30,45 @@ class Game(Frame):
 
         self.hint_text = ""
 
-        # Setup GUI for main screen
-        def setupHomeScreen(self):
-            Game.display = Frame(self, bg="white")
-            self.master.title("Home Screen")
-            self.difficulty = "None"
+    # Setup GUI for main screen
+    def setupHomeScreen(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("Home Screen")
+        self.difficulty = "None"
 
-                # Declare button specifics
-            button_width = 200
-            button_height = 60
+        # Declare button specifics
+        button_width = 200
+        button_height = 60
 
-            # Create difficulty buttons
-            easy_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Easy", command=lambda:self.loadScreen(self.setupEasyMode))
-            easy_diff.place(width=button_width, height=button_height, x=150, y=70)
+        # Create difficulty buttons
+        easy_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Easy", command=lambda:self.loadScreen(self.setupEasyMode))
+        easy_diff.place(width=button_width, height=button_height, x=0, y=420)
 
-            medium_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Medium", command=lambda:self.loadScreen(self.setupMediumMode))
-            medium_diff.place(width=button_width, height=button_height, x=150, y=155)
+        medium_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Medium", command=lambda:self.loadScreen(self.setupMediumMode))
+        medium_diff.place(width=button_width, height=button_height, x=200, y=420)
 
-            hard_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Hard", command=lambda:self.loadScreen(self.setupHardMode))
-            hard_diff.place(width=button_width, height=button_height, x=150, y=240)
+        hard_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Hard", command=lambda:self.loadScreen(self.setupHardMode))
+        hard_diff.place(width=button_width, height=button_height, x=400, y=420)
 
-            rl_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Real Life", command=lambda:self.loadScreen(self.setupRLMode))
-            rl_diff.place(width=button_width, height=button_height, x=150, y=325)
+        rl_diff = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Real Life", command=lambda:self.loadScreen(self.setupRLMode))
+        rl_diff.place(width=button_width, height=button_height, x=600, y=420)
 
-            # Create about and help buttons
-            about = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="About", command=lambda:self.loadScreen(self.setupAbout))
-            about.place(width=button_width, height=button_height, x=450, y=155)
+        # Create about and help buttons
+        about = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="About", command=lambda:self.loadScreen(self.setupAbout))
+        about.place(width=button_width, height=button_height, x=0, y=0)
 
-            help = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Help", command=lambda:self.loadScreen(self.setupHelp))
-            help.place(width=button_width, height=button_height, x=450, y=240)
+        help = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", height=1, width=9, padx=5, text="Help", command=lambda:self.loadScreen(self.setupHelp))
+        help.place(width=button_width, height=button_height, x=300, y=0)
 
-            exitB = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Exit", command=lambda:self.loadScreen("EXIT"))
-            exitB.place(width=button_width, height=button_height, x=450, y=325)
+        exitB = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Exit", command=lambda:self.loadScreen("EXIT"))
+        exitB.place(width=button_width, height=button_height, x=600, y=0)
 
+        # Create Logo
+        canvas = Canvas(width=408, height=264)
+        canvas.place(width=408, height=264, x=204, y=108)
+
+        logo = PhotoImage(file="./Resources/Logo.png")
+        canvas.create_image(0, 0, image=logo, anchor=NW)
 
     # Setup GUI for easy mode
     def setupEasyMode(self):
@@ -82,6 +89,10 @@ class Game(Frame):
         self.timer.start()
 
         self.game_over = 1
+
+        # Create Helper
+        self.helper(0)
+        helperImage = PhotoImage(file=self.helper.image)
 
 	# Setup GUI for medium mode
 	def setupMediumMode(self):
@@ -106,6 +117,10 @@ class Game(Frame):
 		self.timer.set(120)
 		self.timer.start()
 
+        # Create Helper
+        self.helper(1)
+        helperImage = PhotoImage(file=self.helper.image)
+
 	# Setup GUI for hard mode
 	def setupHardMode(self):
 		Game.display = Frame(self, bg="white")
@@ -129,6 +144,10 @@ class Game(Frame):
 		self.timer.set(90)
 		self.timer.start()
 
+        # Create Helper
+        self.helper(2)
+        helperImage = PhotoImage(file=self.helper.image)
+
 	# Setup GUI for IRL mode
 	def setupRLMode(self):
 		Game.display = Frame(self, bg="white")
@@ -151,6 +170,10 @@ class Game(Frame):
 		self.timer = Timer(Game.display)
 		self.timer.set(60)
 		self.timer.start()
+
+        # Create Helper
+        self.helper(3)
+        helperImage = PhotoImage(file=self.helper.image)
 
 		#self.events.append(self.handleTimer)
 
@@ -184,24 +207,24 @@ class Game(Frame):
 		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
 		back.place(width=100, height=40, x=0, y=0)
 
-     def setupEnd(self):
-      Game.display = Frame(self, bg="white")
-      self.master.title("GAMEOVER")
-      self.difficulty = "None"
+    def setupEnd(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("GAMEOVER")
+        self.difficulty = "None"
 
-		# Create back button
-		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
-		back.place(width=100, height=40, x=0, y=0)
+        # Create back button
+        back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setuHomeScreen))
+        back.place(width=100, height=40, x=0, y=0)
 
-		# Display text
-		text = Text(Game.display, height=1, width=13, font=(Game.FONT, 34, "bold"), relief="flat")
-		text.place(x=WIDTH/2-125, y=HEIGHT/2-100)
+        # Display text
+        text = Text(Game.display, height=1, width=13, font=(Game.FONT, 34, "bold"), relief="flat")
+        text.place(x=WIDTH/2-125, y=HEIGHT/2-100)
 
-		if(self.game_over == 2):
-			text.insert("1.0", "YOU WIN")
+        if(self.game_over == 2):
+        	text.insert("1.0", "YOU WIN")
 
-		elif(self.game_over == 3):
-			text.insert("1.0", "YOU LOSE")
+        elif(self.game_over == 3):
+        	text.insert("1.0", "YOU LOSE")
 
         text.config(state=DISABLED)
 
@@ -224,166 +247,166 @@ class Game(Frame):
 
         self.game_over = 1
 
-        # Setup GUI for medium mode
-        def setupMediumMode(self):
-            Game.display = Frame(self, bg="white")
-            self.master.title("Medium Mode")
-            self.difficulty = "Medium"
+    # Setup GUI for medium mode
+    def setupMediumMode(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("Medium Mode")
+        self.difficulty = "Medium"
 
-            <<<<<<< HEAD
-                # Declare button specifics
-                button_width = 400
-                button_height = 40
-                button_spacing = 15
+    
+        # Declare button specifics
+        button_width = 400
+        button_height = 40
+        button_spacing = 15
 
-                # Create back button
-                back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
-                back.place(width=100, height=40, x=0, y=0)
+        # Create back button
+        back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+        back.place(width=100, height=40, x=0, y=0)
 
-                # Create hint box
-                self.hint = Hint(Game.display)
+        # Create hint box
+        self.hint = Hint(Game.display)
 
-                # Create timer
-                self.timer = Timer(Game.display)
-                self.timer.set(120)
-                self.timer.start()
+        # Create timer
+        self.timer = Timer(Game.display)
+        self.timer.set(120)
+        self.timer.start()
 
-                self.game_over = 1
+        self.game_over = 1
 
-        # Setup GUI for hard mode
-        def setupHardMode(self):
-            Game.display = Frame(self, bg="white")
-            self.master.title("Hard Mode")
-            self.difficulty = "Hard"
+    # Setup GUI for hard mode
+    def setupHardMode(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("Hard Mode")
+        self.difficulty = "Hard"
 
-                # Declare button specifics
-                button_width = 400
-                button_height = 40
-                button_spacing = 15
+        # Declare button specifics
+        button_width = 400
+        button_height = 40
+        button_spacing = 15
 
-                # Create back button
-                back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
-                back.place(width=100, height=40, x=0, y=0)
+        # Create back button
+        back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+        back.place(width=100, height=40, x=0, y=0)
 
-                # Create hint box
-                self.hint = Hint(Game.display)
+        # Create hint box
+        self.hint = Hint(Game.display)
 
-                # Create timer
-                self.timer = Timer(Game.display)
-                self.timer.set(90)
-                self.timer.start()
+        # Create timer
+        self.timer = Timer(Game.display)
+        self.timer.set(90)
+        self.timer.start()
 
-                self.game_over = 1
+        self.game_over = 1
 
-        # Setup GUI for IRL mode
-        def setupRLMode(self):
-            Game.display = Frame(self, bg="white")
-            self.master.title("Real Life Mode")
-            self.difficulty = "Real Life"
+    # Setup GUI for IRL mode
+    def setupRLMode(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("Real Life Mode")
+        self.difficulty = "Real Life"
 
-                # Declare button specifics
-                button_width = 400
-                button_height = 40
-                button_spacing = 15
+        # Declare button specifics
+        button_width = 400
+        button_height = 40
+        button_spacing = 15
 
-                # Create back button
-                back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
-                back.place(width=100, height=40, x=0, y=0)
+        # Create back button
+        back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+        back.place(width=100, height=40, x=0, y=0)
 
-                # Create hint box
-                self.hint = Hint(Game.display)
+        # Create hint box
+        self.hint = Hint(Game.display)
 
-                # Create timer
-                self.timer = Timer(Game.display)
-                self.timer.set(60)
-                self.timer.start()
+        # Create timer
+        self.timer = Timer(Game.display)
+        self.timer.set(60)
+        self.timer.start()
 
-                self.game_over = 1
+        self.game_over = 1
 
-        # Setup GUI for the About Page
-        def setupAbout(self):
-            Game.display = Frame(self, bg="white")
-            self.master.title("About")
-            self.difficulty = "None"
+    # Setup GUI for the About Page
+    def setupAbout(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("About")
+        self.difficulty = "None"
 
-                # Declare button specifics
-                button_width = 400
-                button_height = 40
-                button_spacing = 15
+        # Declare button specifics
+        button_width = 400
+        button_height = 40
+        button_spacing = 15
 
-                # Create back button
-                back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
-                back.place(width=100, height=40, x=0, y=0)
+        # Create back button
+        back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+        back.place(width=100, height=40, x=0, y=0)
 
-        # Setup GUI for the Help Page
-        def setupHelp(self):
-            Game.display = Frame(self, bg="white")
-            self.master.title("Help")
-            self.difficulty = "None"
+    # Setup GUI for the Help Page
+    def setupHelp(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("Help")
+        self.difficulty = "None"
 
-                # Declare button specifics
-                button_width = 400
-                button_height = 40
-                button_spacing = 15
+        # Declare button specifics
+        button_width = 400
+        button_height = 40
+        button_spacing = 15
 
-                # Create back button
-                back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
-                back.place(width=100, height=40, x=0, y=0)
+        # Create back button
+        back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+        back.place(width=100, height=40, x=0, y=0)
 
-                def setupEnd(self):
-                    Game.display = Frame(self, bg="white")
-                    self.master.title("GAMEOVER")
-                    self.difficulty = "None"
+    def setupEnd(self):
+        Game.display = Frame(self, bg="white")
+        self.master.title("GAMEOVER")
+        self.difficulty = "None"
 
-                # Create back button
-                back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
-                back.place(width=100, height=40, x=0, y=0)
+        # Create back button
+        back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+        back.place(width=100, height=40, x=0, y=0)
 
-                # Display text
-                text = Text(Game.display, height=1, width=13, font=(Game.FONT, 34, "bold"), relief="flat")
-                text.place(x=WIDTH/2-125, y=HEIGHT/2-100)
+        # Display text
+        text = Text(Game.display, height=1, width=13, font=(Game.FONT, 34, "bold"), relief="flat")
+        text.place(x=WIDTH/2-125, y=HEIGHT/2-100)
 
-                if(self.game_over == 2):
-                    text.insert("1.0", "YOU WIN")
+        if(self.game_over == 2):
+            text.insert("1.0", "YOU WIN")
 
-                elif(self.game_over == 3):
-                    text.insert("1.0", "YOU LOSE")
+        elif(self.game_over == 3):
+            text.insert("1.0", "YOU LOSE")
 
-                    text.config(state=DISABLED)
+            text.config(state=DISABLED)
 
-        # Start the game at the home screen
-        def play(self):
-            self.loadScreen(self.setupHomeScreen)
+    # Start the game at the home screen
+    def play(self):
+        self.loadScreen(self.setupHomeScreen)
 
-        # Clean the display, update the display, display the display
-        def loadScreen(self, setupFunc):
-                # Stop the mainloop if exiting
-                if(setupFunc == "EXIT"):
-                    self.running = False
-                    self.master.destroy()
+    # Clean the display, update the display, display the display
+    def loadScreen(self, setupFunc):
+        # Stop the mainloop if exiting
+        if(setupFunc == "EXIT"):
+            self.running = False
+            self.master.destroy()
 
-                # Clear the screen and any events stored
-                Game.display.destroy()
-                self.events = [lambda:""]
+        # Clear the screen and any events stored
+        Game.display.destroy()
+        self.events = [lambda:""]
 
-                # Load next screen
-                setupFunc()
-                Game.display.pack(fill=BOTH, expand=1)
+        # Load next screen
+        setupFunc()
+        Game.display.pack(fill=BOTH, expand=1)
 
-        # Handle the timer
-        def handleTimer(self):
-            self.timer.update()
+    # Handle the timer
+    def handleTimer(self):
+        self.timer.update()
 
-        # Run events stored in self.events
-        def update(self):
-            if not(self.difficulty == "None" or self.difficulty == "Game Over"):
-                if(self.game_over == 1):
-                    self.handleTimer()
+    # Run events stored in self.events
+    def update(self):
+        if not(self.difficulty == "None" or self.difficulty == "Game Over"):
+            if(self.game_over == 1):
+                self.handleTimer()
 
-                else:
-                    self.loadScreen(self.setupEnd)
-                    self.game_over = 0
-                    =======
+            else:
+                self.loadScreen(self.setupEnd)
+                self.game_over = 0
+                
 	# Run events stored in self.events
 	def update(self):
 		if not(self.difficulty == "None" or self.difficulty == "Game Over"):
@@ -393,107 +416,103 @@ class Game(Frame):
 			else:
 				self.loadScreen(self.setupEnd)
 				self.game_over = 0
-                >>>>>>> 68d7ed4aceaa6059ddfdc14435a27401fb923c91
+                
 
 
-                class Hint(Text):
+class Hint(Text):
 
-                 def __init__(self, master):
-                  Text.__init__(self, master, height=5, width=25, relief="flat", wrap=WORD, font=("Helvetica", 12, "bold"))
+   def __init__(self, master):
+      Text.__init__(self, master, height=5, width=25, relief="flat", wrap=WORD, font=("Helvetica", 12, "bold"))
 
-                  self.place(x=WIDTH/2-50, y=HEIGHT/2)
-                  self.state = DISABLED
+      self.place(x=WIDTH/2-50, y=HEIGHT/2)
+      self.state = DISABLED
 
-                  self.text = ""
+      self.text = ""
 
-                  def set_Text(self, text):
-                      self.config(state=NORMAL)
-                      self.delete("1.0", END)
-                      self.insert("1.0", text)
-                      self.config(state=DISABLED)
+      def set_Text(self, text):
+          self.config(state=NORMAL)
+          self.delete("1.0", END)
+          self.insert("1.0", text)
+          self.config(state=DISABLED)
 
 
-                      class Timer(Text):
+class Timer(Text):
 
-	# Initialize the text widget
-	def __init__(self, master):
-		Text.__init__(self, master, height=1, width=5, relief="flat", font=("Helvetica", 34, "bold"))
+    # Initialize the text widget
+    def __init__(self, master):
+    	Text.__init__(self, master, height=1, width=5, relief="flat", font=("Helvetica", 34, "bold"))
 
-		# Place it centered in screen
-		self.place(x=WIDTH/2-50, y=HEIGHT/2-100)
-		self.state = DISABLED
+    	# Place it centered in screen
+    	self.place(x=WIDTH/2-50, y=HEIGHT/2-100)
+    	self.state = DISABLED
 
-		# Initialize variables
-		self.duration = 0
-		self.remainder = 0
-		self.start_time = 0
-		self.end = False
+    	# Initialize variables
+    	self.duration = 0
+    	self.remainder = 0
+    	self.start_time = 0
+    	self.end = False
 
-	# Set timer's duration, in seconds
-	def set(self, duration):
-		self.duration = duration
-		self.remainder = duration
-		self.start_time = 0
-		self.end = False
+    # Set timer's duration, in seconds
+    def set(self, duration):
+    	self.duration = duration
+    	self.remainder = duration
+    	self.start_time = 0
+    	self.end = False
 
-		# Display time
-		formatted = self.formatTime()
+    	# Display time
+    	formatted = self.formatTime()
 
-		self.config(state=NORMAL)
-		self.delete("1.0", END)
-		self.insert("1.0", formatted)
-		self.config(state=DISABLED)
+    	self.config(state=NORMAL)
+    	self.delete("1.0", END)
+    	self.insert("1.0", formatted)
+    	self.config(state=DISABLED)
 
-	# Update the timer
-	def update(self):
-		# Calculate what time is left
-		self.calculateTime()
+    # Update the timer
+    def update(self):
+    	# Calculate what time is left
+    	self.calculateTime()
 
-		# Format it
-		formatted = self.formatTime()
+    	# Format it
+    	formatted = self.formatTime()
 
-		# Flash time if under 10s
-		if(self.remainder < 11):
-			if(int(formatted[3:]) % 2 == 0):
-				self.config(fg="red")
+    	# Flash time if under 10s
+    	if(self.remainder < 11):
+    		if(int(formatted[3:]) % 2 == 0):
+    			self.config(fg="red")
 
-			else:
-				self.config(fg="black")
+    		else:
+    			self.config(fg="black")
 
-		# Display time
-		self.config(state=NORMAL)
-		self.delete("1.0", END)
-		self.insert("1.0", formatted)
-		self.config(state=DISABLED)
+    	# Display time
+    	self.config(state=NORMAL)
+    	self.delete("1.0", END)
+    	self.insert("1.0", formatted)
+    	self.config(state=DISABLED)
 
-	# Format time in mm:ss format
-	def formatTime(self):
-		pre_form = round(self.remainder / 60.0, 2)
+    # Format time in mm:ss format
+    def formatTime(self):
+        pre_form = round(self.remainder / 60.0, 2)
 
-		minute = str(int(pre_form))
-		second = str(int((pre_form - int(minute)) * 60.0))
+        minute = str(int(pre_form))
+        second = str(int((pre_form - int(minute)) * 60.0))
 
-		if(len(minute) < 2):
-			temp = minute
-			minute = "0" + temp
+        if(len(minute) < 2):
+        	temp = minute
+        	minute = "0" + temp
 
-          if(len(second) < 2):
-           temp = second
-           second = "0" + second
+        return "{}:{}".format(minute, second)
 
-           return "{}:{}".format(minute, second)
+    # Calculate what time is left
+    def calculateTime(self):
+    	self.remainder = self.duration - (time() - self.start_time)
 
-	# Calculate what time is left
-	def calculateTime(self):
-		self.remainder = self.duration - (time() - self.start_time)
+    	if(self.remainder < 0):
+    		self.end = True
+    		self.remainder = 0
 
-		if(self.remainder < 0):
-			self.end = True
-			self.remainder = 0
-
-	# Start timer
-	def start(self):
-		self.start_time = time()
+    # Start timer
+    def start(self):
+    	self.start_time = time()
 
 #----[SETUP]---------------------------------------------------------
 def setup():
