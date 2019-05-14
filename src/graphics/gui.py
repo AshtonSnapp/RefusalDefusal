@@ -62,11 +62,149 @@ class Game(Frame):
                 exitB = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Exit", command=lambda:self.loadScreen("EXIT"))
                 exitB.place(width=button_width, height=button_height, x=450, y=325)
 
+<<<<<<< HEAD
         # Setup GUI for easy mode
         def setupEasyMode(self):
                 Game.display = Frame(self, bg="white")
                 self.master.title("Easy Mode")
                 self.difficulty = "Easy"
+=======
+		# Create back button
+		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+		back.place(width=100, height=40, x=0, y=0)
+
+		# Create hint box
+		self.hint = Hint(Game.display)
+
+		# Create timer
+		self.timer = Timer(Game.display)
+		self.timer.set(15)
+		self.timer.start()
+
+		self.game_over = 1
+
+	# Setup GUI for medium mode
+	def setupMediumMode(self):
+		Game.display = Frame(self, bg="white")
+		self.master.title("Medium Mode")
+		self.difficulty = "Medium"
+
+		# Declare button specifics
+		button_width = 400
+		button_height = 40
+		button_spacing = 15
+
+		# Create back button
+		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+		back.place(width=100, height=40, x=0, y=0)
+
+		# Create hint box
+		self.hint = Hint(Game.display)
+
+		# Create timer
+		self.timer = Timer(Game.display)
+		self.timer.set(120)
+		self.timer.start()
+
+	# Setup GUI for hard mode
+	def setupHardMode(self):
+		Game.display = Frame(self, bg="white")
+		self.master.title("Hard Mode")
+		self.difficulty = "Hard"
+
+		# Declare button specifics
+		button_width = 400
+		button_height = 40
+		button_spacing = 15
+
+		# Create back button
+		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+		back.place(width=100, height=40, x=0, y=0)
+
+		# Create hint box
+		self.hint = Hint(Game.display)
+
+		# Create timer
+		self.timer = Timer(Game.display)
+		self.timer.set(90)
+		self.timer.start()
+
+	# Setup GUI for IRL mode
+	def setupRLMode(self):
+		Game.display = Frame(self, bg="white")
+		self.master.title("Real Life Mode")
+		self.difficulty = "Real Life"
+
+		# Declare button specifics
+		button_width = 400
+		button_height = 40
+		button_spacing = 15
+
+		# Create back button
+		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+		back.place(width=100, height=40, x=0, y=0)
+
+		# Create hint box
+		self.hint = Hint(Game.display)
+
+		# Create timer
+		self.timer = Timer(Game.display)
+		self.timer.set(60)
+		self.timer.start()
+
+		#self.events.append(self.handleTimer)
+
+	# Setup GUI for the About Page
+	def setupAbout(self):
+		Game.display = Frame(self, bg="white")
+		self.master.title("About")
+		self.difficulty = "None"
+
+		# Declare button specifics
+		button_width = 400
+		button_height = 40
+		button_spacing = 15
+
+		# Create back button
+		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+		back.place(width=100, height=40, x=0, y=0)
+
+	# Setup GUI for the Help Page
+	def setupHelp(self):
+		Game.display = Frame(self, bg="white")
+		self.master.title("Help")
+		self.difficulty = "None"
+
+		# Declare button specifics
+		button_width = 400
+		button_height = 40
+		button_spacing = 15
+
+		# Create back button
+		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+		back.place(width=100, height=40, x=0, y=0)
+
+	def setupEnd(self):
+		Game.display = Frame(self, bg="white")
+		self.master.title("GAMEOVER")
+		self.difficulty = "None"
+
+		# Create back button
+		back = Button(Game.display, font=(Game.FONT, Game.FONT_SIZE), activebackground="#AAA", bg="#CCC", fg="#F22", height=1, width=9, padx=5, text="Back", command=lambda:self.loadScreen(self.setupHomeScreen))
+		back.place(width=100, height=40, x=0, y=0)
+
+		# Display text
+		text = Text(Game.display, height=1, width=13, font=(Game.FONT, 34, "bold"), relief="flat")
+		text.place(x=WIDTH/2-125, y=HEIGHT/2-100)
+
+		if(self.game_over == 2):
+			text.insert("1.0", "YOU WIN")
+
+		elif(self.game_over == 3):
+			text.insert("1.0", "YOU LOSE")
+
+		text.config(state=DISABLED)
+>>>>>>> 68d7ed4aceaa6059ddfdc14435a27401fb923c91
 
                 # Declare button specifics
                 button_width = 400
@@ -93,6 +231,7 @@ class Game(Frame):
                 self.master.title("Medium Mode")
                 self.difficulty = "Medium"
 
+<<<<<<< HEAD
                 # Declare button specifics
                 button_width = 400
                 button_height = 40
@@ -245,6 +384,17 @@ class Game(Frame):
                     else:
                         self.loadScreen(self.setupEnd)
                         self.game_over = 0
+=======
+	# Run events stored in self.events
+	def update(self):
+		if not(self.difficulty == "None" or self.difficulty == "Game Over"):
+			if(self.game_over == 1):
+				self.handleTimer()
+
+			else:
+				self.loadScreen(self.setupEnd)
+				self.game_over = 0
+>>>>>>> 68d7ed4aceaa6059ddfdc14435a27401fb923c91
 
 
 class Hint(Text):
