@@ -9,7 +9,6 @@
 
 # Import necessary modules
 import hardware.hardware as hw
-import logic.rhClasses as rohe
 import graphics.gui as GUI
 import Sequences.Sequence_Generator as Seq_Gen
 from random import randint, choice
@@ -132,7 +131,7 @@ while(gui.running):
         # Generate an easy sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("Easy")
-            io.mistakes = 0
+            io.reset()
 
 
     # If medium mode selected...
@@ -143,7 +142,8 @@ while(gui.running):
         # Generate a medium sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("Medium")
-            io.mistakes = 0
+            io.reset()
+            gui.mistake.max = 10
 
 
     # If hard mode selected...
@@ -154,7 +154,8 @@ while(gui.running):
         # Generate a hard sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("Hard")
-            io.mistakes = 0
+            io.reset()
+            gui.mistake.max = 5
 
 
     # If real life mode selected...
@@ -165,12 +166,16 @@ while(gui.running):
         # Generate a RealLife sequence if not already generated
         if(gen.getSeqLen() == 0):
             gen.genSequence("RealLife")
-            io.mistakes = 0
+            io.reset()
+            gui.mistake.max = 1
 
 
     # If user not on a game difficulty, unload sequence
-    if(gui.difficulty == "None" and gen.getSeqLen() != 0):
-        gen.clearSeq()
+    if(gui.difficulty == "None"):
+        if(gen.getSeqLen() != 0):
+            gen.clearSeq()
+
+        io.reset()
 
     # Else...
     else:
@@ -179,7 +184,10 @@ while(gui.running):
             completed = io.run_Sequence( gen.getAct() )
 
             # Set the hint text
-            gui.hint.set_Text( gen.getHint() ) 
+            gui.hint.set_Text( gen.getHint() )
+
+            # Set mistake text
+            gui.mistake.set_Text( io.mistakes )
 
     # If completed, go to next activity
     if(completed):
@@ -194,13 +202,13 @@ while(gui.running):
         elif(gui.timer.end):
             gui.game_over = 3
 
-        elif(gui.difficulty == "Medium" and io.mistakes == 10):
+        elif(gui.difficulty == "Medium" and io.mistakes == gui.mistake.max):
             gui.game_over = 3
             
-        elif(gui.difficulty == "Hard" and io.mistakes == 5):
+        elif(gui.difficulty == "Hard" and io.mistakes == gui.mistake.max):
             gui.game_over = 3
 
-        elif(gui.difficulty == "Real Life" and io.mistakes == 1):
+        elif(gui.difficulty == "Real Life" and io.mistakes == gui.mistake.max):
             gui.game_over = 3
 
     window.update_idletasks()

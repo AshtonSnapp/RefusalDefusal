@@ -32,19 +32,10 @@ class Robot(object):
 
 
 class Helper(object):
-	dialogue = {}  # Dictionary of dictionaries. Stores different dialogue options for each helper. First key is the helper, second key is the action needed (flip, enter, pull), value is dialogue string.
-	helpers = ["father", "drill_seargent", "cajun", "stoner420"]
-	sprites = {}  # Dictionary of dictionaries. Stores different sprites for each helper. First key is the helper, second key is the action needed, value is the path to the picture (or maybe an Image object?)
+	sprites = ["Resources/Dad.png", "Resources/Nervous_Guy.png", "Resources/Sergeant.png". "Resources/Sergeant.png"]
 
-	def __init__(self, master, sequence, difficulty):
-		self.helper = helpers[difficulty]
-
-		self._currentDialogue = dialogue[self.helper][sequence[0]]
-		self._currentSprite = sprites[self.helper][sequence[0]]
-
-	def updateState(self, robot):
-		self._currentDialogue = dialogue[self.helper][sequence]
-		self._currentSprite = sprites[self.helper][sequence]
+	def __init__(self, difficulty):
+		self.image = Helper.sprites[difficulty]
 
 
 # Have an awesome day. :banana:

@@ -49,6 +49,22 @@ class HardIO(object):
 
         self.mistakes = 0
 
+    def reset(self):
+        self.codeIn = ""
+        self.held = False
+        self.code_index = 1
+
+        self.wire_wait = 0
+        
+        self.seven_seg_counter = 0
+        self.seven_seg_index = -1
+
+        self.prev_wires = "111"
+        self.prev_switches = "000"
+        self.prev_code = ""
+
+        self.mistakes = 0
+
     def run_Sequence(self, sequence):
         completed = False
         
@@ -65,9 +81,6 @@ class HardIO(object):
             if(wires != self.prev_wires or self.codeIn != self.prev_code):
                 self.mistakes += 1
 
-                # Reset code
-                self.codeIn = ""
-
             # If switch status has changed and equals the sequence, return true for completed
             elif(switches != self.prev_switches and switches == sequence[1:]):
                 completed = True
@@ -80,6 +93,9 @@ class HardIO(object):
                     if(switches[i] != self.prev_switches[i] and switches[i] != sequence[i+1]):
                         self.mistakes += 1
 
+            # Reset code
+            self.codeIn = ""
+
         # If the activity is to pull...
         elif(sequence[0] == "p"):
 
@@ -88,9 +104,6 @@ class HardIO(object):
             # Check if the other inputs have changed; if so, add to mistakes
             if(switches != self.prev_switches or self.codeIn != self.prev_code):
                 self.mistakes += 1
-
-                # Reset code
-                self.codeIn = ""
 
             # If wire status has changed and equals the sequence, return true for completed
             elif(wires != self.prev_wires and wires == sequence[1:]):
@@ -104,6 +117,9 @@ class HardIO(object):
                     if(wires[i] != self.prev_wires[i] and wires[i] != sequence[i+1]):
                         self.mistakes += 1
 
+            # Reset code
+            self.codeIn = ""
+
         # If the activity is to enter...
         elif(sequence[0] == "e"):
 
@@ -116,12 +132,17 @@ class HardIO(object):
             # If code status has changed and equals the sequence, return true for completed
             elif(self.codeIn != self.prev_code and self.codeIn == sequence[1:]):
                 completed = True
+                self.codeIn = ""
 
              # If code status has changed and equals the sequence, return true for completed
             elif(self.codeIn != self.prev_code and self.codeIn != sequence[1:self.code_index]):
                 self.mistakes += 1
                 self.codeIn = ""
                 self.code_index = 1
+
+        if(sequence[0] != "e"):
+            self.codeIn = ""
+            self.prev_code = ""
 
         self.prev_wires = wires
         self.prev_switches = switches
@@ -147,24 +168,24 @@ class HardIO(object):
                 self.seven_seg_counter = time()
                 self.seven_seg_index += 1
                 
-                if(self.seven_seg_index >= 3):
-                    self.seven_seg_index = 0
+            if(self.seven_seg_index >= 3):
+                self.seven_seg_index = 0
 
             if(sequence[self.seven_seg_index] != _input[self.seven_seg_index]):
                 self.seven_Seg("0" + str(self.seven_seg_index+1))
 
         elif(value[0] == "e"):
             if( timing-self.seven_seg_counter > .75):
-                
                 self.seven_seg_index += 1
-                if(self.seven_seg_index >= len(sequence)):
-                    self.seven_seg_index = 0
 
                 if(self.seven_seg_index == len(sequence)-1):
                     self.seven_seg_counter = time() + .5
 
                 else:
                     self.seven_seg_counter = time()
+
+            if(self.seven_seg_index >= len(sequence)):
+                    self.seven_seg_index = 0
 
             if( timing-self.seven_seg_counter < .5 ):
                 if(sequence[self.seven_seg_index] != "4"):
