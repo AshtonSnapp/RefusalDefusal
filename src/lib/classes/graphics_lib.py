@@ -9,52 +9,6 @@ Introduction to Computer Science" (Franklin, Beedle & Associates).
 LICENSE: This is open-source software released under the terms of the
 GPL (http://www.gnu.org/licenses/gpl.html).
 
-PLATFORMS: The package is a wrapper around Tkinter and should run on
-any platform where Tkinter is available.
-
-INSTALLATION: Put this file somewhere where Python can see it.
-
-OVERVIEW: There are two kinds of objects in the library. The GraphWin
-class implements a window where drawing can be done and various
-GraphicsObjects are provided that can be drawn into a GraphWin. As a
-simple example, here is a complete program to draw a circle of radius
-10 centered in a 100x100 window:
-
---------------------------------------------------------------------
-from graphics import *
-
-def main():
-    win = GraphWin("My Circle", 100, 100)
-    c = Circle(Point(50,50), 10)
-    c.draw(win)
-    win.getMouse() # Pause to view result
-    win.close()    # Close window when done
-
-main()
---------------------------------------------------------------------
-GraphWin objects support coordinate transformation through the
-setCoords method and mouse and keyboard interaction methods.
-
-The library provides the following graphical objects:
-    Point
-    Line
-    Circle
-    Oval
-    Rectangle
-    Polygon
-    Text
-    Entry (for text-based input)
-    Image
-
-Various attributes of graphical objects can be set such as
-outline-color, fill-color and line-width. Graphical objects also
-support moving and hiding for animation effects.
-
-The library also provides a very simple class for pixel-based image
-manipulation, Pixmap. A pixmap can be loaded from a file and displayed
-using an Image object. Both getPixel and setPixel methods are provided
-for manipulating the image.
-
 DOCUMENTATION: For complete documentation, see Chapter 4 of "Python
 Programming: An Introduction to Computer Science" by John Zelle,
 published by Franklin, Beedle & Associates.  Also see
@@ -62,105 +16,8 @@ http://mcsp.wartburg.edu/zelle/python for a quick reference"""
 
 __version__ = "5.0"
 
-# Version 5 8/26/2016
-#     * update at bottom to fix MacOS issue causing askopenfile() to hang
-#     * update takes an optional parameter specifying update rate
-#     * Entry objects get focus when drawn
-#     * __repr_ for all objects
-#     * fixed offset problem in window, made canvas borderless
-
-# Version 4.3 4/25/2014
-#     * Fixed Image getPixel to work with Python 3.4, TK 8.6 (tuple type handling)
-#     * Added interactive keyboard input (getKey and checkKey) to GraphWin
-#     * Modified setCoords to cause redraw of current objects, thus
-#       changing the view. This supports scrolling around via setCoords.
-#
-# Version 4.2 5/26/2011
-#     * Modified Image to allow multiple undraws like other GraphicsObjects
-# Version 4.1 12/29/2009
-#     * Merged Pixmap and Image class. Old Pixmap removed, use Image.
-# Version 4.0.1 10/08/2009
-#     * Modified the autoflush on GraphWin to default to True
-#     * Autoflush check on close, setBackground
-#     * Fixed getMouse to flush pending clicks at entry
-# Version 4.0 08/2009
-#     * Reverted to non-threaded version. The advantages (robustness,
-#         efficiency, ability to use with other Tk code, etc.) outweigh
-#         the disadvantage that interactive use with IDLE is slightly more
-#         cumbersome.
-#     * Modified to run in either Python 2.x or 3.x (same file).
-#     * Added Image.getPixmap()
-#     * Added update() -- stand alone function to cause any pending
-#           graphics changes to display.
-#
-# Version 3.4 10/16/07
-#     Fixed GraphicsError to avoid "exploded" error messages.
-# Version 3.3 8/8/06
-#     Added checkMouse method to GraphWin
-# Version 3.2.3
-#     Fixed error in Polygon init spotted by Andrew Harrington
-#     Fixed improper threading in Image constructor
-# Version 3.2.2 5/30/05
-#     Cleaned up handling of exceptions in Tk thread. The graphics package
-#     now raises an exception if attempt is made to communicate with
-#     a dead Tk thread.
-# Version 3.2.1 5/22/05
-#     Added shutdown function for tk thread to eliminate race-condition
-#        error "chatter" when main thread terminates
-#     Renamed various private globals with _
-# Version 3.2 5/4/05
-#     Added Pixmap object for simple image manipulation.
-# Version 3.1 4/13/05
-#     Improved the Tk thread communication so that most Tk calls
-#        do not have to wait for synchonization with the Tk thread.
-#        (see _tkCall and _tkExec)
-# Version 3.0 12/30/04
-#     Implemented Tk event loop in separate thread. Should now work
-#        interactively with IDLE. Undocumented autoflush feature is
-#        no longer necessary. Its default is now False (off). It may
-#        be removed in a future version.
-#     Better handling of errors regarding operations on windows that
-#       have been closed.
-#     Addition of an isClosed method to GraphWindow class.
-
-# Version 2.2 8/26/04
-#     Fixed cloning bug reported by Joseph Oldham.
-#     Now implements deep copy of config info.
-# Version 2.1 1/15/04
-#     Added autoflush option to GraphWin. When True (default) updates on
-#        the window are done after each action. This makes some graphics
-#        intensive programs sluggish. Turning off autoflush causes updates
-#        to happen during idle periods or when flush is called.
-# Version 2.0
-#     Updated Documentation
-#     Made Polygon accept a list of Points in constructor
-#     Made all drawing functions call TK update for easier animations
-#          and to make the overall package work better with
-#          Python 2.3 and IDLE 1.0 under Windows (still some issues).
-#     Removed vestigial turtle graphics.
-#     Added ability to configure font for Entry objects (analogous to Text)
-#     Added setTextColor for Text as an alias of setFill
-#     Changed to class-style exceptions
-#     Fixed cloning of Text objects
-
-# Version 1.6
-#     Fixed Entry so StringVar uses _root as master, solves weird
-#            interaction with shell in Idle
-#     Fixed bug in setCoords. X and Y coordinates can increase in
-#           "non-intuitive" direction.
-#     Tweaked wm_protocol so window is not resizable and kill box closes.
-
-# Version 1.5
-#     Fixed bug in Entry. Can now define entry before creating a
-#     GraphWin. All GraphWins are now toplevel windows and share
-#     a fixed root (called _root).
-
-# Version 1.4
-#     Fixed Garbage collection of Tkinter images bug.
-#     Added ability to set text atttributes.
-#     Added Entry boxes.
-
-import time, os, sys
+from time import time as Time, sleep as Sleep
+from os import path as Path
 
 try:  # import as appropriate for 2.x vs. 3.x
    import tkinter as tk
@@ -185,15 +42,15 @@ BAD_OPTION = "Illegal option value"
 _root = tk.Tk()
 _root.withdraw()
 
-_update_lasttime = time.time()
+_update_lasttime = Time()
 
 def update(rate=None):
     global _update_lasttime
     if rate:
-        now = time.time()
+        now = Time()
         pauseLength = 1/rate-(now-_update_lasttime)
         if pauseLength > 0:
-            time.sleep(pauseLength)
+            Sleep(pauseLength)
             _update_lasttime = now + pauseLength
         else:
             _update_lasttime = now
@@ -207,39 +64,46 @@ class GraphWin(tk.Canvas):
 
     """A GraphWin is a toplevel window for displaying graphics."""
 
-    def __init__(self, title="Graphics Window",
-                 width=200, height=200, autoflush=True):
+    def __init__(self, title="Graphics Window", width=200, height=200, autoflush=False):
         assert type(title) == type(""), "Title must be a string"
+
         master = tk.Toplevel(_root)
         master.protocol("WM_DELETE_WINDOW", self.close)
-        tk.Canvas.__init__(self, master, width=width, height=height,
-                           highlightthickness=0, bd=0)
+        tk.Canvas.__init__(self, master, width=width, height=height, highlightthickness=0, bd=0)
+
         self.master.title(title)
         self.pack()
         master.resizable(0,0)
+
         self.foreground = "black"
         self.items = []
         self.mouseX = None
         self.mouseY = None
+
         self.bind("<Button-1>", self._onClick)
         self.bind_all("<Key>", self._onKey)
+
         self.height = int(height)
         self.width = int(width)
+
         self.autoflush = autoflush
         self._mouseCallback = None
+
         self.trans = None
         self.closed = False
         master.lift()
+
         self.lastKey = ""
-        if autoflush: _root.update()
+
+        self.ticks = 0
+        self.last_tick = Time()
+        self.dt = 0
 
     def __repr__(self):
         if self.isClosed():
             return "<Closed GraphWin>"
         else:
-            return "GraphWin('{}', {}, {})".format(self.master.title(),
-                                             self.getWidth(),
-                                             self.getHeight())
+            return "GraphWin('{}', {}, {})".format(self.master.title(), self.getWidth(), self.getHeight())
 
     def __str__(self):
         return repr(self)
@@ -250,7 +114,6 @@ class GraphWin(tk.Canvas):
 
     def _onKey(self, evnt):
         self.lastKey = evnt.keysym
-
 
     def setBackground(self, color):
         """Set background color of the window"""
@@ -268,24 +131,21 @@ class GraphWin(tk.Canvas):
         """Close the window"""
 
         if self.closed: return
+
         self.closed = True
         self.master.destroy()
         self.__autoflush()
 
-
     def isClosed(self):
         return self.closed
 
-
     def isOpen(self):
         return not self.closed
-
 
     def __autoflush(self):
         if self.autoflush:
             _root.update()
 
-    
     def plot(self, x, y, color="black"):
         """Set pixel (x,y) to the given color"""
         self.__checkOpen()
@@ -314,7 +174,7 @@ class GraphWin(tk.Canvas):
         while self.mouseX == None or self.mouseY == None:
             self.update()
             if self.isClosed(): raise GraphicsError("getMouse in closed window")
-            time.sleep(.1) # give up thread
+            Sleep(.1) # give up thread
         x,y = self.toWorld(self.mouseX, self.mouseY)
         self.mouseX = None
         self.mouseY = None
@@ -340,7 +200,7 @@ class GraphWin(tk.Canvas):
         while self.lastKey == "":
             self.update()
             if self.isClosed(): raise GraphicsError("getKey in closed window")
-            time.sleep(.1) # give up thread
+            Sleep(.1) # give up thread
 
         key = self.lastKey
         self.lastKey = ""
@@ -386,17 +246,43 @@ class GraphWin(tk.Canvas):
         if self._mouseCallback:
             self._mouseCallback(Point(e.x, e.y))
 
-    def addItem(self, item):
-        self.items.append(item)
+    def hasItem(self, item):
+        return item in self.items
 
-    def delItem(self, item):
-        self.items.remove(item)
+    def addItem(self, item):
+        if(not self.hasItem(item)):
+            self.items.append(item)
+
+    def remItem(self, item):
+        if(self.hasItem(item)):
+            item.undraw()
+            self.items.remove(item)
+
+    def clearItems(self):
+        for item in self.items:
+            item.undraw()
+        self.items = []
+
+    def getTime(self):
+        return self.ticks
+
+    def getDT(self):
+        return self.dt
 
     def redraw(self):
-        for item in self.items[:]:
-            item.undraw()
-            item.draw(self)
-        self.update()
+        now = Time()
+        dt = now - self.last_tick
+
+        if(dt > 1.0/60.0):
+            self.last_tick = now
+            self.ticks += dt
+            self.dt = dt
+
+            for item in self.items[:]:
+                item.undraw()
+                item.draw(self)
+
+            self.update()
         
                       
 class Transform:
@@ -496,7 +382,7 @@ class GraphicsObject:
         if not self.canvas: return
         if not self.canvas.isClosed():
             self.canvas.delete(self.id)
-            self.canvas.delItem(self)
+            # self.canvas.delItem(self)
             if self.canvas.autoflush:
                 _root.update()
         self.canvas = None
@@ -951,65 +837,13 @@ class Image(GraphicsObject):
 
         """
         
-        path, name = os.path.split(filename)
+        path, name = Path.split(filename)
         ext = name.split(".")[-1]
         self.img.write( filename, format=ext)
 
-        
+
 def color_rgb(r,g,b):
     """r,g,b are intensities of red, green, and blue in range(256)
     Returns color specifier string for the resulting color"""
     return "#%02x%02x%02x" % (r,g,b)
 
-def test():
-    win = GraphWin()
-    win.setCoords(0,0,10,10)
-    t = Text(Point(5,5), "Centered Text")
-    t.draw(win)
-    p = Polygon(Point(1,1), Point(5,3), Point(2,7))
-    p.draw(win)
-    e = Entry(Point(5,6), 10)
-    e.draw(win)
-    win.getMouse()
-    p.setFill("red")
-    p.setOutline("blue")
-    p.setWidth(2)
-    s = ""
-    for pt in p.getPoints():
-        s = s + "(%0.1f,%0.1f) " % (pt.getX(), pt.getY())
-    t.setText(e.getText())
-    e.setFill("green")
-    e.setText("Spam!")
-    e.move(2,0)
-    win.getMouse()
-    p.move(2,3)
-    s = ""
-    for pt in p.getPoints():
-        s = s + "(%0.1f,%0.1f) " % (pt.getX(), pt.getY())
-    t.setText(s)
-    win.getMouse()
-    p.undraw()
-    e.undraw()
-    t.setStyle("bold")
-    win.getMouse()
-    t.setStyle("normal")
-    win.getMouse()
-    t.setStyle("italic")
-    win.getMouse()
-    t.setStyle("bold italic")
-    win.getMouse()
-    t.setSize(14)
-    win.getMouse()
-    t.setFace("arial")
-    t.setSize(20)
-    win.getMouse()
-    win.close()
-
-#MacOS fix 2
-#tk.Toplevel(_root).destroy()
-
-# MacOS fix 1
-update()
-
-if __name__ == "__main__":
-    test()
