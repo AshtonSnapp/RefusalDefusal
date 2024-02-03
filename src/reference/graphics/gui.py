@@ -1,62 +1,86 @@
-#####################################################################
-# Name: Carrick Inabnett, Ashton Snapp, Justin Crouch
-# Last Update: 1 May 2019
-# Changes: Added timer to difficulties.
-#####################################################################
-# from Tkinter import *
-from graphics_lib import *
+
+if(__name__ == "__main__"): from graphics_lib import *
+else:                       from .graphics_lib import *
+
 from time import time, sleep
+from random import randint
+from json import load as LOAD
 from pathlib import Path
 
-ASSETS = Path(__file__).resolve().parent / "Assets"
+DIRS = Path(__file__).resolve().parent
+ASSETS = DIRS / "Assets"
 
 #----[CLASSES]-------------------------------------------------------
 # Game Class
 class Game(GraphWin):
-    SCREEN_SIZE = (WIDTH, HEIGHT) = (16*50, 9*50)
+    
     FPS = 60
 
-    def __init__(self):
+    def __init__(self, scrn_width=16*50, scrn_height=9*50):
+        self.SCREEN_SIZE = (self.WIDTH, self.HEIGHT) = (scrn_width, scrn_height)
+
         super().__init__("Refusal Defusal", self.WIDTH, self.HEIGHT, autoflush=False)
         self._last_update = time()
         self._timer = 0
         self.setMouseHandler(self._mouseHandler)
 
+        self.scenes = {}
+        self.scene = ""
+
         self.buttons = []
+
+    def loadScene(self, name, file):
+        self.scenes[name] = LOAD(file)
+
+    def displayScene(self, name, btn_funcs):
+        scene = self.scenes.get(name)
+
+        if(scene):
+            self.scene = name
+            self.clearItems()
+
+            for btn in scene.get('buttons'):
+                new = Button( btn['x'], btn['y'], btn['width'], btn['height'], btn['color'],
+                              btn['text'], btn['font-size'], btn['font-color'] )
+
+                new.setOnClick(btn_funcs[ btn['name'] ])
+
+                self.addButton(new)
+
+            for img in scene.get('images'):
+                new = Photo( ASSETS / img['path'], img['x'], img['y'] )
+                self.addItem(new)
 
     def getGameTime(self):
         return self._timer
 
+    def addButton(self, btn):
+        if(btn not in self.buttons):
+            self.buttons.append(btn)
+            self.addItem(btn)
+
     def remItem(self, item):
-        if(item in self.items):
+        if(self.hasItem(item)):
             item.undraw()
             super().delItem(item)
 
-    # def checkMouse(self):
-    #     if self.isClosed():
-    #         raise GraphicsError("checkMouse in closed window")
-    #     self.update()
-    #     if self.mouseX != None and self.mouseY != None:
-    #         x,y = self.toWorld(self.mouseX, self.mouseY)
-    #         self.mouseX = None
-    #         self.mouseY = None
-    #         return Point(x,y)
-    #     else:
-    #         return None
+    def clearItems(self):
+        for item in self.items[:]:
+            self.remItem(item)
+
+    def hasItem(self, item):
+        return item in self.items
 
     def _mouseHandler(self, point):
         mx = point.getX()
         my = point.getY()
 
         for button in self.buttons[:]:
-            p1x, p1y = button.getP1().getX(), button.getP1().getY()
-            p2x, p2y = button.getP2().getX(), button.getP2().getY()
 
+            p1x, p1y, p2x, p2y = button.getBoundingBox()
             if(mx < p1x or mx > p2x or my < p1y or my > p2y): continue
 
-            print("In the box")
-
-        print("Clicked")
+            button._onClick(button)
 
     def redraw(self):
         now = time()
@@ -309,8 +333,37 @@ class Game(GraphWin):
 
 
 class Photo(Image):
-    def __init__(self, filename, x, y):
+    def __init__(self, filename, x=0, y=0):
         super().__init__(Point(x, y), filename)
+
+class Button:
+    def __init__(self, x, y, width, height, color, text, font_size=24, font_color="white"):
+        self.rect = Rectangle(Point(x, y), Point(x+width, y+height))
+        self.rect.setFill(color)
+
+        self.txt = Text(self.rect.getCenter(), text)
+        self.txt.setSize(font_size)
+        self.txt.setTextColor(font_color)
+
+    def getBoundingBox(self):
+        p1x, p1y = self.rect.getP1().getX(), self.rect.getP1().getY()
+        p2x, p2y = self.rect.getP2().getX(), self.rect.getP2().getY()
+
+        return p1x, p1y, p2x, p2y
+
+    def draw(self, gwin):
+        self.rect.draw(gwin)
+        self.txt.draw(gwin)
+
+    def undraw(self):
+        self.rect.undraw()
+        self.txt.undraw()
+
+    def setOnClick(self, func):
+        self._onClick = func
+
+    def _onClick(self):
+        pass
 
 # class Hint(Text):
 
@@ -426,16 +479,20 @@ class Photo(Image):
 #     	self.start_time = time()
 
 #----[MAIN]----------------------------------------------------------
+
+
 if(__name__ == "__main__"):
+    from pathlib import Path
+    ASSETS = Path(__file__).resolve().parent / "Assets"
+
     g = Game()
 
     homescreen = Photo(ASSETS / "Resources/Logo.png", 456, 256)
+    btn = Button(50, 50, 175, 50, "blue", "Bitch", 24, "white")
 
     g.addItem(homescreen)
+    g.addItem(btn)
 
     while(g.isOpen()):
-
-        if(g.getGameTime() > 3):
-            g.remItem(homescreen)
 
         g.redraw()
