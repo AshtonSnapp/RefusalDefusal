@@ -1,20 +1,14 @@
-from lib.classes.game import Game
-from lib.classes.scene import Scene
+from lib.display.window import Window
+from lib.display.scene import Scene
 
-from pathlib import Path
+win = Window()
 
-DIRS = Path(__file__).resolve().parent
-ASSETS = DIRS / "lib/assets"
+scene1 = Scene(win)
+scene1.addImage(50, 50, 'lib/assets/Dad.png', 
+	{
+		'event_name' : '<Button-1>',
+		'callback' : lambda self, e: self.setPos(e.x, e.y)
+	})
+scene1()
 
-GAME = Game("Refusal Defusal", 1600, 900)
-
-scene1 = Scene()
-scene1.addImage(ASSETS / 'Logo.png', 50, 50)
-
-scene2 = Scene()
-
-GAME.addScene('scene1', scene1)
-GAME.addScene('scene2', scene2)
-GAME.setScene('scene1')
-
-GAME.run()
+win()
